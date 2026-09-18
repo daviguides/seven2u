@@ -120,6 +120,7 @@ class SeriesDetailOut(BaseModel):
 class WatchedIn(BaseModel):
     """Body for the idempotent watched toggle."""
 
+    series_id: int = Field(ge=1)
     watched: bool
 
 
