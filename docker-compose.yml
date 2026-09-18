@@ -1,0 +1,30 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: seven2u
+      POSTGRES_PASSWORD: seven2u
+      POSTGRES_DB: seven2u
+    volumes:
+      - seven2u_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seven2u -d seven2u"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "7777:7777"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://seven2u:seven2u@db:5432/seven2u
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+      PORT: 7777
+    depends_on:
+      - db
+
+volumes:
+  seven2u_pgdata:
