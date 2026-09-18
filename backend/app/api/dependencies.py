@@ -14,8 +14,8 @@ from app.domain.interfaces import (
     WatchedRepository,
 )
 from app.infrastructure.comment_repo import SqlCommentRepository
+from app.infrastructure.groq_provider import GroqProvider
 from app.infrastructure.heuristic_provider import HeuristicTemplateProvider
-from app.infrastructure.huggingface_provider import HuggingFaceProvider
 from app.infrastructure.tvmaze_gateway import TVMazeGateway
 from app.infrastructure.watched_repo import SqlWatchedRepository
 from app.services.comment_service import CommentService
@@ -39,15 +39,15 @@ def get_catalog(request: Request) -> SeriesCatalog:
 
 
 def get_llm_provider(request: Request) -> InsightProvider | None:
-    """Return the HuggingFace provider, or None when no key is set."""
+    """Return the Groq provider, or None when no key is set."""
     settings: Settings = request.app.state.settings
-    if not settings.huggingface_api_key:
+    if not settings.groq_api_key:
         return None
     provider = getattr(request.app.state, "llm_provider", None)
     if provider is None:
-        provider = HuggingFaceProvider(
-            api_key=settings.huggingface_api_key,
-            model=settings.huggingface_model,
+        provider = GroqProvider(
+            api_key=settings.groq_api_key,
+            model=settings.groq_model,
         )
         request.app.state.llm_provider = provider
     return provider

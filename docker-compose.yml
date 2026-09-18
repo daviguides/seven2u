@@ -21,7 +21,7 @@ services:
       - "7777:7777"
     environment:
       DATABASE_URL: postgresql+asyncpg://seven2u:seven2u@db:5432/seven2u
-      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
       PORT: 7777
     depends_on:
       - db

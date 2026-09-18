@@ -51,7 +51,7 @@ export interface Comment {
   created_at: string;
 }
 
-export type InsightSource = "llm:huggingface" | "heuristic:fallback";
+export type InsightSource = "llm:groq" | "heuristic:fallback";
 
 export interface Insight {
   text: string;

@@ -34,7 +34,7 @@ async def test_insight_service_uses_primary_when_it_succeeds(
     insight = await service.for_series(series.id)
 
     assert insight.text == "llm text"
-    assert insight.source == "llm:huggingface"
+    assert insight.source == "llm:groq"
 
 
 async def test_insight_service_falls_back_when_primary_raises(

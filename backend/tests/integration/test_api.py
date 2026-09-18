@@ -146,7 +146,7 @@ async def test_insight_uses_llm_when_available(client):
     response = await client.get(f"/api/v1/series/{SERIES_ID}/insights")
 
     assert response.status_code == 200
-    assert response.json()["source"] == "llm:huggingface"
+    assert response.json()["source"] == "llm:groq"
     assert response.json()["text"] == "llm says hi"
 
 

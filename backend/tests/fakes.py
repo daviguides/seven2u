@@ -154,4 +154,4 @@ class StubProvider:
         self.calls.append(context)
         if self.error is not None:
             raise self.error
-        return SeriesInsight(text=self.text, source="llm:huggingface")
+        return SeriesInsight(text=self.text, source="llm:groq")

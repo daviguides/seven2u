@@ -12,7 +12,7 @@ docker compose up --build
 
 Open <http://localhost:7777>. That is the only exposed port: FastAPI serves both the compiled React SPA and the JSON API from one container; PostgreSQL runs in a second container and is not exposed.
 
-Optional: set `HUGGINGFACE_API_KEY` (copy `.env.example` to `.env`) to enable LLM-generated insights. Without it, or whenever the model is slow or fails, the app falls back to a rule-based insight and labels it as such in the UI. Nothing breaks either way.
+Optional: set `GROQ_API_KEY` (copy `.env.example` to `.env`) to enable LLM-generated insights via Agno + Groq. Without it, or whenever the model is slow or fails, the app falls back to a rule-based insight and labels it as such in the UI. Nothing breaks either way.
 
 ## What you can do
 
@@ -35,7 +35,7 @@ backend/app/                                              ▼
   api/            routes, DTOs, DI wiring, error mapping   ◀── HTTP /api/v1/*
   services/       use cases (search, detail, tracking, comments, insights)
   domain/         Pydantic frozen models, Protocols, pure season rules
-  infrastructure/ TVMaze gateway, SQLAlchemy repos, HuggingFace + heuristic providers
+  infrastructure/ TVMaze gateway, SQLAlchemy repos, Agno/Groq + heuristic providers
 ```
 
 Dependency rule: `api → services → domain ← infrastructure`. Services depend only on the Protocols in `domain/interfaces.py`; concrete adapters are injected in `api/dependencies.py`. Unit tests replace every adapter with in-memory fakes (`tests/fakes.py`), so the service suite runs with zero I/O.
@@ -44,11 +44,11 @@ Dependency rule: `api → services → domain ← infrastructure`. Services depe
 
 - **Own only user data.** TVMaze is the source of truth for shows and episodes and is never mirrored. Postgres holds two tables: `watched_episodes` and `comments`. A 300s in-process TTL cache keeps TVMaze calls low and avoids rate limiting.
 - **Pydantic is the domain model.** Frozen Pydantic v2 models serve as domain entities; SQLAlchemy models live only in `infrastructure/`. One mapping (domain ↔ DB) instead of three.
-- **AI is a plug.** `InsightProvider` is a Protocol. `HuggingFaceProvider` calls the Inference API with a strict 2.5s timeout and fails fast. `HeuristicTemplateProvider` builds a real insight from genres, rating, viewer progress and note count. `InsightService` tries the LLM and falls back on any exception. No retries, no circuit breaker: simplest thing that never produces a 5xx. The response carries `source: "llm:huggingface" | "heuristic:fallback"` so the UI can label it.
+- **AI is a plug.** `InsightProvider` is a Protocol. `GroqProvider` runs a single-turn [Agno](https://github.com/agno-agi/agno) `Agent` backed by a Groq chat model (`llama-3.3-70b-versatile` by default, free tier) wrapped in `asyncio.wait_for` with a strict 2.5s timeout; it fails fast. No tools, memory or teams: Agno gives a provider-agnostic model layer so swapping Groq for another vendor is a one-line change. `HeuristicTemplateProvider` builds a real insight from genres, rating, viewer progress and note count. `InsightService` tries the LLM and falls back on any exception. No retries, no circuit breaker: simplest thing that never produces a 5xx. The response carries `source: "llm:groq" | "heuristic:fallback"` so the UI can label it.
 - **Idempotent tracking.** `PUT /api/v1/episodes/{id}/watched` with `{"series_id", "watched"}` sets an end state rather than toggling; repeating the call is safe. The service verifies the episode belongs to the series before writing.
 - **Single origin.** Multi-stage Dockerfile: Node builds the SPA, Python image serves it plus a catch-all that returns `index.html` for client-side routes. No CORS configuration needed.
 - **DB readiness.** Compose v3.3 `depends_on` does not wait for Postgres. The lifespan runs `wait_for_database` (10 × 1.5s) before `create_all`.
-- **Async end to end.** FastAPI handlers, `httpx.AsyncClient` for TVMaze and HuggingFace, `asyncpg` through SQLAlchemy's async engine.
+- **Async end to end.** FastAPI handlers, `httpx.AsyncClient` for TVMaze, `Agent.arun` for Groq, `asyncpg` through SQLAlchemy's async engine.
 
 ## API
 
@@ -82,7 +82,7 @@ cd frontend && npm install && npm run dev
 
 ## Testing strategy
 
-- `tests/unit/`: domain rules (season grouping, completion), every service with fakes, TVMaze mapping and cache via `httpx.MockTransport`, HuggingFace parsing/timeouts via `MockTransport`, fallback behaviour.
+- `tests/unit/`: domain rules (season grouping, completion), every service with fakes, TVMaze mapping and cache via `httpx.MockTransport`, Groq provider (success, error, empty, timeout) via a fake Agno agent, fallback behaviour.
 - `tests/integration/test_api.py`: the real FastAPI app with real SQL repositories on `sqlite+aiosqlite` in memory; catalogue and LLM swapped through `app.dependency_overrides`.
 
 ## Trade-offs and next steps

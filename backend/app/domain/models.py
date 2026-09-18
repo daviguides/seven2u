@@ -6,7 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-InsightSource = Literal["llm:huggingface", "heuristic:fallback"]
+InsightSource = Literal["llm:groq", "heuristic:fallback"]
 
 SPECIALS_SEASON = 0
 
