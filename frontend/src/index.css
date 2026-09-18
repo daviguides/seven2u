@@ -36,6 +36,10 @@ body {
   @apply bg-bg text-text-primary font-sans antialiased;
 }
 
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+}
+
 .card {
   @apply bg-surface border border-border rounded-card;
   box-shadow: var(--shadow-card);
