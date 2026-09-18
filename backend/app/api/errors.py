@@ -5,9 +5,11 @@ from fastapi.responses import JSONResponse
 
 from app.domain.errors import NotFoundError, UpstreamError, ValidationError
 
+HTTP_422_UNPROCESSABLE = 422
+
 _STATUS_BY_ERROR: dict[type[Exception], int] = {
     NotFoundError: status.HTTP_404_NOT_FOUND,
-    ValidationError: status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ValidationError: HTTP_422_UNPROCESSABLE,
     UpstreamError: status.HTTP_502_BAD_GATEWAY,
 }
 
