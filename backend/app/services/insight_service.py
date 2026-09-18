@@ -40,12 +40,14 @@ class InsightService:
         series_id: int,
         episode_id: int | None,
     ) -> InsightContext:
-        series, episodes, watched_ids, comments = await asyncio.gather(
+        series, episodes = await asyncio.gather(
             self._catalog.get_series(series_id),
             self._catalog.get_episodes(series_id),
-            self._watched.ids_for_series(series_id),
-            self._comments.list_for_series_all(series_id),
         )
+        # Both repositories share one session; sessions are not
+        # concurrency-safe, so these two reads stay sequential.
+        watched_ids = await self._watched.ids_for_series(series_id)
+        comments = await self._comments.list_for_series_all(series_id)
         episode = None
         if episode_id is not None:
             episode = next((e for e in episodes if e.id == episode_id), None)
