@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  FORGE — Design System Reference · Seven2U
+  Structure: sticky sidebar nav + scrollable content (Forge template skeleton)
+  Tokens: docs/foundation/design-system.md · dark-first, light supported
+-->
+<title>Seven2U — Design System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.462.0/lucide.min.js"></script>
+<style>
+/* ===== FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ===== DESIGN TOKENS — Seven2U ===== */
+/* Dark mode (primary / default) */
+:root{
+  --s-ground:#0f0f0f;        /* Background — cinema dark */
+  --s-surface:#1a1a2e;       /* Surface — deep navy-purple */
+  --s-surface-alt:#232342;   /* Surface Elevated — cards, modals */
+  --s-text:#f0f0f0;          /* Text Primary */
+  --s-text-2:#a0a0b0;        /* Text Secondary */
+  --s-text-muted:#6b6b80;    /* Text Muted */
+  --s-border:#2a2a40;        /* Border */
+  --s-accent:#e2b714;        /* Primary — gold, seventh art */
+  --s-accent-hover:#f5cc3a;  /* Primary Hover */
+  --s-ai:#7c3aed;            /* Accent — violet, AI moments only */
+  --s-ai-text:#b58bff;
+  --s-positive:#22c55e;      /* Success — watched */
+  --s-critical:#ef4444;      /* Error */
+  --s-shadow:none;
+  --s-focus:0 0 0 3px rgba(226,183,20,.35);
+
+  --display:'Inter',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --r-card:12px;--r-btn:8px;--r-chip:6px;--r-poster:8px;--r-full:9999px;
+  --radius:var(--r-card);
+  --t:150ms ease-out;
+  color-scheme: dark light;
+}
+/* Light mode */
+[data-theme="light"]{
+  --s-ground:#fafafa;
+  --s-surface:#ffffff;
+  --s-surface-alt:#f5f5f5;
+  --s-text:#1a1a2e;
+  --s-text-2:#4a4a60;
+  --s-text-muted:#8a8a9a;
+  --s-border:#e5e5e5;
+  --s-accent:#b8960e;
+  --s-accent-hover:#a3850b;
+  --s-ai:#6d28d9;
+  --s-ai-text:#6d28d9;
+  --s-shadow:0 1px 3px rgba(0,0,0,.08);
+  --s-focus:0 0 0 3px rgba(184,150,14,.3);
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== RESET ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--s-ground);color:var(--s-text);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background var(--t),color var(--t)}
+a{color:inherit;text-decoration:none}
+svg{flex-shrink:0}
+
+/* ===== LAYOUT: sidebar + content ===== */
+.page{max-width:1400px;margin:0 auto;padding:24px 32px 96px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:48px;align-items:start}
+
+/* ===== SIDEBAR NAV ===== */
+.ds-nav{position:sticky;top:24px;padding-top:64px}
+.ds-nav .wm{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:-.02em;color:var(--s-accent);line-height:1;margin-bottom:6px}
+.ds-nav .wm span{color:var(--s-text);font-weight:400}
+.ds-nav .tag{font-size:11px;color:var(--s-text-muted);letter-spacing:.06em;margin-bottom:20px}
+.ds-nav a{display:flex;gap:10px;align-items:baseline;padding:6px 0;font-size:12.5px;color:var(--s-text-muted);border-left:2px solid transparent;padding-left:12px;margin-left:-14px;transition:color var(--t),border-color var(--t)}
+.ds-nav a:hover,.ds-nav a.active{color:var(--s-text)}
+.ds-nav a.active{border-left-color:var(--s-accent)}
+.ds-nav a i{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--s-accent);width:16px;flex:none}
+#theme-toggle{margin:0 0 16px;padding:6px 10px;display:inline-flex;align-items:center;gap:8px;background:var(--s-surface);border:1px solid var(--s-border);border-radius:var(--r-full);cursor:pointer;font:inherit;font-size:12px;color:var(--s-text-2)}
+#theme-toggle svg{width:14px;height:14px;color:var(--s-accent)}
+
+/* ===== CONTENT ===== */
+.content{min-width:0}
+section{scroll-margin-top:24px;margin-bottom:72px}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--s-border)}
+.sec-head h2{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.01em}
+.sec-head .idx{font-family:var(--mono);font-size:11px;color:var(--s-accent)}
+.sec-head .note{margin-left:auto;color:var(--s-text-muted);font-size:13px;max-width:46ch;text-align:right}
+
+/* ===== HELPERS ===== */
+.label{font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--s-text-muted)}
+.mono{font-family:var(--mono)}
+.muted{color:var(--s-text-2)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g6{grid-template-columns:repeat(6,1fr)}
+.spec{font-family:var(--mono);font-size:11px;color:var(--s-text-muted);margin-top:8px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* ===== CARD ===== */
+.card{background:var(--s-surface);border:1px solid var(--s-border);border-radius:var(--r-card);box-shadow:var(--s-shadow);padding:24px;transition:transform var(--t),background var(--t),border-color var(--t)}
+.card.tight{padding:0;overflow:hidden}
+.card.elevated{background:var(--s-surface-alt)}
+.card.hoverable{cursor:pointer}
+.card.hoverable:hover{transform:translateY(-2px);background:var(--s-surface-alt);border-color:var(--s-text-muted)}
+
+/* ===== SWATCH ===== */
+.swatch{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--s-border)}
+.swatch-color{height:80px}
+.swatch-info{padding:10px 12px;background:var(--s-surface)}
+.swatch-name{font-size:12px;font-weight:600;margin-bottom:2px}
+.swatch-hex{font-family:var(--mono);font-size:11px;color:var(--s-text-2)}
+.swatch-use{font-size:11px;color:var(--s-text-muted);margin-top:2px}
+
+/* ===== TYPE SPECIMEN ===== */
+.type-specimen{margin-bottom:24px;padding:20px 0;border-bottom:1px solid var(--s-border);display:grid;grid-template-columns:130px 1fr;gap:24px;align-items:baseline}
+.type-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--s-text-muted);font-family:var(--mono)}
+
+/* ===== HERO ===== */
+.hero{padding:64px 0 48px;border-bottom:1px solid var(--s-border);margin-bottom:56px}
+.hero h1{font-family:var(--display);font-weight:700;font-size:48px;letter-spacing:-.02em;line-height:1.05}
+.hero h1 em{font-style:normal;color:var(--s-accent)}
+.hero p{max-width:56ch;color:var(--s-text-2);margin-top:16px;font-size:15px}
+
+/* ===== SPACING / RADIUS ===== */
+.space-row{display:flex;align-items:center;gap:16px;padding:6px 0}
+.space-row .bar{height:14px;background:var(--s-accent);border-radius:2px}
+.space-row .lbl{font-family:var(--mono);font-size:11px;color:var(--s-text-2);width:56px}
+.radii{display:flex;flex-wrap:wrap;gap:24px}
+.radius-item{display:flex;flex-direction:column;gap:8px;align-items:center;font-size:12px;color:var(--s-text-2)}
+.radius-box{width:120px;height:80px;background:var(--s-surface-alt);border:1px solid var(--s-border);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--s-text-2)}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--r-btn);font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:background var(--t),color var(--t),border-color var(--t),box-shadow var(--t)}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--s-accent);color:#0f0f0f}
+.btn-primary:hover{background:var(--s-accent-hover)}
+.btn-secondary{background:var(--s-surface-alt);color:var(--s-text);border-color:var(--s-border)}
+.btn-secondary:hover{border-color:var(--s-text-muted)}
+.btn-ghost{background:transparent;color:var(--s-text-2)}
+.btn-ghost:hover{background:var(--s-surface-alt);color:var(--s-text)}
+.btn-ai{background:var(--s-ai);color:#fff}
+.btn-danger{background:transparent;color:var(--s-critical);border-color:var(--s-critical)}
+.btn:focus-visible{outline:none;box-shadow:var(--s-focus)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:6px 12px;font-size:13px}.btn.lg{padding:14px 24px;font-size:16px}.btn.icon{padding:10px}
+
+/* ===== INPUTS ===== */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:500;color:var(--s-text-2)}
+.input{width:100%;padding:12px 14px;background:var(--s-ground);border:1px solid var(--s-border);border-radius:var(--r-btn);color:var(--s-text);font:inherit;font-size:15px;transition:border-color var(--t),box-shadow var(--t)}
+[data-theme="light"] .input{background:var(--s-surface)}
+.input::placeholder{color:var(--s-text-muted)}
+.input:focus,.input.focus{outline:none;border-color:var(--s-accent);box-shadow:var(--s-focus)}
+.input.is-error{border-color:var(--s-critical)}
+.input[disabled]{opacity:.5}
+.hint{font-size:12px;color:var(--s-text-muted)}.hint.err{color:var(--s-critical)}
+.search-wrap{position:relative}
+.search-wrap>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--s-text-muted)}
+.search-wrap .input{padding-left:42px;padding-right:42px}
+.spinner{position:absolute;right:14px;top:50%;width:16px;height:16px;margin-top:-8px;border:2px solid var(--s-border);border-top-color:var(--s-accent);border-radius:50%;animation:spin .8s linear infinite}
+.spinner.inline{position:static;margin:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+textarea.input{min-height:96px;resize:vertical;font-size:14px}
+
+/* ===== BADGES / CHIPS ===== */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--r-chip);font-size:12px;font-weight:500;background:var(--s-surface-alt);color:var(--s-text-2);border:1px solid var(--s-border)}
+.badge svg{width:12px;height:12px}
+.b-gold{background:rgba(226,183,20,.14);color:var(--s-accent);border-color:rgba(226,183,20,.3)}
+.b-ai{background:rgba(124,58,237,.16);color:var(--s-ai-text);border-color:rgba(124,58,237,.35)}
+.b-pos{background:rgba(34,197,94,.14);color:var(--s-positive);border-color:rgba(34,197,94,.3)}
+.b-pill{border-radius:var(--r-full)}
+
+/* ===== TOGGLES ===== */
+.watch-toggle{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--r-full);border:1px solid var(--s-border);background:transparent;color:var(--s-text-2);font:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all var(--t)}
+.watch-toggle svg{width:16px;height:16px}
+.watch-toggle:hover{border-color:var(--s-text-muted);color:var(--s-text)}
+.watch-toggle.on{background:rgba(34,197,94,.14);color:var(--s-positive);border-color:rgba(34,197,94,.4)}
+.switch{position:relative;width:44px;height:24px;border-radius:var(--r-full);background:var(--s-surface-alt);border:1px solid var(--s-border);cursor:pointer;display:inline-block}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--s-text-2);transition:transform var(--t)}
+.switch.on{background:var(--s-positive);border-color:var(--s-positive)}.switch.on::after{transform:translateX(20px);background:#fff}
+.checkbox{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--s-border);display:inline-grid;place-items:center}
+.checkbox.on{background:var(--s-positive);border-color:var(--s-positive);color:#fff}.checkbox svg{width:14px;height:14px}
+
+/* ===== POSTER / SERIES CARD ===== */
+.poster{aspect-ratio:2/3;border-radius:var(--r-poster);display:flex;align-items:flex-end;padding:12px;font-weight:700;font-size:18px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6);line-height:1.1}
+.g-dark{background:radial-gradient(120% 80% at 80% 0%,rgba(226,183,20,.35),transparent 50%),linear-gradient(165deg,#06101f 0%,#12213c 55%,#0a0a0a 100%)}
+.g-matter{background:radial-gradient(90% 60% at 20% 20%,rgba(124,58,237,.55),transparent 60%),linear-gradient(160deg,#0d0d1a,#2e1065)}
+.series-card .poster{border-radius:0}
+.series-card .body{padding:12px 14px 14px}
+.series-card .title{font-weight:600;font-size:15px}
+.series-card .year{font-family:var(--mono);font-size:12px;color:var(--s-text-muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+
+/* ===== PROGRESS ===== */
+.progress{height:6px;background:var(--s-surface-alt);border-radius:var(--r-full);overflow:hidden}
+.progress>div{height:100%;background:var(--s-positive);border-radius:var(--r-full)}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--s-text-2);margin-bottom:6px}
+
+/* ===== AI INSIGHT ===== */
+.insight{background:var(--s-surface);border:1px solid rgba(124,58,237,.5);border-left:3px solid var(--s-ai);border-radius:var(--r-card);padding:16px 18px;box-shadow:var(--s-shadow)}
+.insight .head{display:flex;align-items:center;gap:8px;color:var(--s-ai-text);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.insight .head svg{width:14px;height:14px}
+.insight p{font-size:14px;line-height:1.6}
+.insight.loading{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{border-color:rgba(124,58,237,.45)}50%{border-color:rgba(124,58,237,1)}}
+.insight.fallback{border-left-color:var(--s-text-muted);border-color:var(--s-border)}
+.insight.fallback .head{color:var(--s-text-muted)}.insight.fallback p{color:var(--s-text-2)}
+
+/* ===== EPISODE ROW ===== */
+.ep-row{display:grid;grid-template-columns:76px 1fr auto auto;gap:16px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--s-border);transition:background var(--t)}
+.ep-row:hover{background:var(--s-surface-alt)}.ep-row:last-child{border-bottom:0}
+.ep-row .code{font-family:var(--mono);font-size:12px;color:var(--s-text-muted)}
+.ep-row .t{font-weight:500;font-size:15px}.ep-row.watched .t{color:var(--s-text-2)}
+.ep-row .cm{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--s-text-muted)}.ep-row .cm svg{width:14px;height:14px}
+
+/* ===== ICONS ===== */
+.icon-tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;background:var(--s-surface);border:1px solid var(--s-border);border-radius:var(--r-card);font-family:var(--mono);font-size:10px;color:var(--s-text-2)}
+.icon-tile svg{width:22px;height:22px;color:var(--s-text)}
+
+/* ===== STATES ===== */
+.sk{background:linear-gradient(90deg,var(--s-surface-alt) 25%,var(--s-border) 50%,var(--s-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.sk.line{height:12px;margin-bottom:8px}.sk.poster{aspect-ratio:2/3;border-radius:0}
+.toast{display:inline-flex;align-items:center;gap:12px;background:var(--s-surface-alt);border:1px solid var(--s-border);border-left:3px solid var(--s-critical);padding:12px 16px;border-radius:var(--r-btn);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.toast.success{border-left-color:var(--s-positive)}.toast svg{width:18px;height:18px}.toast .act{color:var(--s-accent);font-weight:600;cursor:pointer}
+.empty{text-align:center;padding:48px 24px;color:var(--s-text-2)}
+.empty svg{width:36px;height:36px;color:var(--s-text-muted);margin-bottom:12px}
+.empty h3{color:var(--s-text);margin-bottom:6px;font-size:18px;font-weight:600}
+.comment{padding:12px 0;border-bottom:1px solid var(--s-border)}.comment:last-child{border:0}
+.comment .when{font-family:var(--mono);font-size:11px;color:var(--s-text-muted);margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--s-border)}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--s-text-muted)}
+td code{font-family:var(--mono);color:var(--s-accent)}
+.demo-label{font-size:11px;color:var(--s-text-muted);margin-bottom:12px;font-family:var(--mono)}
+
+@media(max-width:800px){
+  .page{grid-template-columns:1fr;padding:16px}
+  .ds-nav{position:static;padding-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .ds-nav a{padding:6px 10px;border:1px solid var(--s-border);border-radius:8px;margin:0}
+  .g6,.g4,.g3,.g2{grid-template-columns:repeat(2,1fr)}
+  .type-specimen{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ===== SIDEBAR NAV ===== -->
+  <nav class="ds-nav">
+    <div class="wm">Seven<span>2U</span></div>
+    <div class="tag">DESIGN SYSTEM · R1</div>
+    <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"><i data-lucide="moon"></i><span id="theme-label">Dark</span></button>
+    <a href="#palette"><i>00</i>Colour Palette</a>
+    <a href="#typography"><i>01</i>Typography</a>
+    <a href="#spacing"><i>02</i>Spacing</a>
+    <a href="#radius"><i>03</i>Border Radius</a>
+    <a href="#motion"><i>04</i>Motion &amp; Shadow</a>
+    <a href="#buttons"><i>05</i>Buttons</a>
+    <a href="#inputs"><i>06</i>Inputs</a>
+    <a href="#chips"><i>07</i>Chips</a>
+    <a href="#toggles"><i>08</i>Toggles</a>
+    <a href="#cards"><i>09</i>Cards</a>
+    <a href="#insights"><i>10</i>AI Insight</a>
+    <a href="#episodes"><i>11</i>Episode Row</a>
+    <a href="#icons"><i>12</i>Icons</a>
+    <a href="#states"><i>13</i>States</a>
+  </nav>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="content">
+
+    <div class="hero">
+      <h1><em>Seven2U</em> Design System</h1>
+      <p>Living reference for the interactive TV series companion. Dark-first because people watch series at night. The poster and metadata are the stars; the UI stays out of the way. Gold for the seventh art, violet only when AI speaks, green when something is watched.</p>
+    </div>
+
+    <!-- 00 COLOUR PALETTE -->
+    <section id="palette">
+      <div class="sec-head"><span class="idx">00</span><h2>Colour Palette</h2><span class="note">Swatches reflect the active theme. Toggle in the sidebar to compare.</span></div>
+      <p class="label" style="margin-bottom:12px">Base</p>
+      <div class="grid g6">
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-ground)"></div><div class="swatch-info"><div class="swatch-name">Background</div><div class="swatch-hex" data-d="#0f0f0f" data-l="#fafafa">#0f0f0f</div><div class="swatch-use">Page ground</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-surface)"></div><div class="swatch-info"><div class="swatch-name">Surface</div><div class="swatch-hex" data-d="#1a1a2e" data-l="#ffffff">#1a1a2e</div><div class="swatch-use">Top bar, panels</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-surface-alt)"></div><div class="swatch-info"><div class="swatch-name">Surface Elevated</div><div class="swatch-hex" data-d="#232342" data-l="#f5f5f5">#232342</div><div class="swatch-use">Cards, modals, hover</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-text)"></div><div class="swatch-info"><div class="swatch-name">Text Primary</div><div class="swatch-hex" data-d="#f0f0f0" data-l="#1a1a2e">#f0f0f0</div><div class="swatch-use">Headings, body</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-text-2)"></div><div class="swatch-info"><div class="swatch-name">Text Secondary</div><div class="swatch-hex" data-d="#a0a0b0" data-l="#4a4a60">#a0a0b0</div><div class="swatch-use">Descriptions</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-text-muted)"></div><div class="swatch-info"><div class="swatch-name">Text Muted</div><div class="swatch-hex" data-d="#6b6b80" data-l="#8a8a9a">#6b6b80</div><div class="swatch-use">Metadata</div></div></div>
+      </div>
+      <p class="label" style="margin:24px 0 12px">Semantic</p>
+      <div class="grid g6">
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-accent)"></div><div class="swatch-info"><div class="swatch-name">Primary</div><div class="swatch-hex" data-d="#e2b714" data-l="#b8960e">#e2b714</div><div class="swatch-use">Logo, CTAs, focus</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-accent-hover)"></div><div class="swatch-info"><div class="swatch-name">Primary Hover</div><div class="swatch-hex" data-d="#f5cc3a" data-l="#a3850b">#f5cc3a</div><div class="swatch-use">Button hover</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-ai)"></div><div class="swatch-info"><div class="swatch-name">Accent</div><div class="swatch-hex" data-d="#7c3aed" data-l="#6d28d9">#7c3aed</div><div class="swatch-use">AI insight only</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-positive)"></div><div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#22c55e</div><div class="swatch-use">Watched state</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-critical)"></div><div class="swatch-info"><div class="swatch-name">Error</div><div class="swatch-hex">#ef4444</div><div class="swatch-use">Toasts, invalid</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:var(--s-border)"></div><div class="swatch-info"><div class="swatch-name">Border</div><div class="swatch-hex" data-d="#2a2a40" data-l="#e5e5e5">#2a2a40</div><div class="swatch-use">Dividers</div></div></div>
+      </div>
+    </section>
+
+    <!-- 01 TYPOGRAPHY -->
+    <section id="typography">
+      <div class="sec-head"><span class="idx">01</span><h2>Typography</h2><span class="note">Inter for everything readable. JetBrains Mono for episode codes and metadata.</span></div>
+      <div class="type-specimen"><div class="type-label">48 · Inter 700</div><div style="font-size:48px;font-weight:700;line-height:1.05;letter-spacing:-.02em">Dark</div></div>
+      <div class="type-specimen"><div class="type-label">32 · Inter 700</div><div style="font-size:32px;font-weight:700;line-height:1.15;letter-spacing:-.02em">Discover your next series</div></div>
+      <div class="type-specimen"><div class="type-label">24 · Inter 600</div><div style="font-size:24px;font-weight:600;line-height:1.3">Season 1 · 10 episodes</div></div>
+      <div class="type-specimen"><div class="type-label">18 · Inter 600</div><div style="font-size:18px;font-weight:600">Secrets</div></div>
+      <div class="type-specimen"><div class="type-label">16 · Inter 400</div><div style="font-size:16px">A missing child sets four families on a frantic hunt for answers as they unearth a mind-bending mystery that spans three generations.</div></div>
+      <div class="type-specimen"><div class="type-label">14 · Inter 400</div><div style="font-size:14px;color:var(--s-text-2)">Mind-blowing from episode 1. The family tree is impossible to track without a diagram.</div></div>
+      <div class="type-specimen" style="border-bottom:none"><div class="type-label">13 · JetBrains Mono 400</div><div class="mono" style="font-size:13px;color:var(--s-text-2)">S01E01 · 2017 · 51 min · Sci-Fi / Thriller / Drama</div></div>
+    </section>
+
+    <!-- 02 SPACING -->
+    <section id="spacing">
+      <div class="sec-head"><span class="idx">02</span><h2>Spacing</h2><span class="note">Base unit 4px. Every gap, padding and margin lands on this scale.</span></div>
+      <div class="space-row"><span class="lbl">4</span><div class="bar" style="width:4px"></div></div>
+      <div class="space-row"><span class="lbl">8</span><div class="bar" style="width:8px"></div></div>
+      <div class="space-row"><span class="lbl">12</span><div class="bar" style="width:12px"></div></div>
+      <div class="space-row"><span class="lbl">16</span><div class="bar" style="width:16px"></div></div>
+      <div class="space-row"><span class="lbl">24</span><div class="bar" style="width:24px"></div></div>
+      <div class="space-row"><span class="lbl">32</span><div class="bar" style="width:32px"></div></div>
+      <div class="space-row"><span class="lbl">48</span><div class="bar" style="width:48px"></div></div>
+      <div class="space-row"><span class="lbl">64</span><div class="bar" style="width:64px"></div></div>
+      <div class="space-row"><span class="lbl">96</span><div class="bar" style="width:96px"></div></div>
+    </section>
+
+    <!-- 03 RADIUS -->
+    <section id="radius">
+      <div class="sec-head"><span class="idx">03</span><h2>Border Radius</h2><span class="note">Softer on large surfaces, tighter on labels. Full round only for pills.</span></div>
+      <div class="radii">
+        <div class="radius-item"><div class="radius-box" style="border-radius:12px">12px</div>Cards</div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:8px">8px</div>Buttons</div>
+        <div class="radius-item"><div class="radius-box g-dark" style="border-radius:8px;color:#fff;border:0">8px</div>Posters</div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:6px">6px</div>Chips / Tags</div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:9999px;width:80px">9999</div>Pills</div>
+      </div>
+    </section>
+
+    <!-- 04 MOTION -->
+    <section id="motion">
+      <div class="sec-head"><span class="idx">04</span><h2>Motion &amp; Shadow</h2><span class="note">Dark mode elevates by surface colour, not shadow. Respects prefers-reduced-motion.</span></div>
+      <div class="card tight"><table>
+        <thead><tr><th>Token</th><th>Value</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td><code>--t</code></td><td class="mono">150ms ease-out</td><td>Hover, focus, colour changes</td></tr>
+          <tr><td>page transition</td><td class="mono">200ms fade</td><td>Search → detail → episode</td></tr>
+          <tr><td>accordion</td><td class="mono">250ms ease</td><td>Season expand / collapse</td></tr>
+          <tr><td>shadow (dark)</td><td class="mono">none</td><td>Elevation via surface colour</td></tr>
+          <tr><td>shadow (light)</td><td class="mono">0 1px 3px rgba(0,0,0,.08)</td><td>Cards</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 05 BUTTONS -->
+    <section id="buttons">
+      <div class="sec-head"><span class="idx">05</span><h2>Buttons</h2><span class="note">Gold is reserved for the single most important action. Violet only triggers AI insight.</span></div>
+      <div class="card">
+        <div class="demo-label">variants</div>
+        <div class="row">
+          <button class="btn btn-primary"><i data-lucide="search"></i>Search</button>
+          <button class="btn btn-secondary">View episodes</button>
+          <button class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to series</button>
+          <button class="btn btn-ai"><i data-lucide="sparkles"></i>AI Insight</button>
+          <button class="btn btn-danger">Delete comment</button>
+        </div>
+        <div class="demo-label" style="margin-top:24px">sizes &amp; icon-only</div>
+        <div class="row">
+          <button class="btn btn-primary sm">Small</button><button class="btn btn-primary">Default</button><button class="btn btn-primary lg">Large</button>
+          <button class="btn btn-secondary icon" aria-label="Comments"><i data-lucide="message-circle"></i></button>
+          <button class="btn btn-secondary icon" aria-label="Watched"><i data-lucide="eye"></i></button>
+        </div>
+        <div class="demo-label" style="margin-top:24px">states</div>
+        <div class="row">
+          <button class="btn btn-primary" style="background:var(--s-accent-hover)">Hover</button>
+          <button class="btn btn-primary" style="box-shadow:var(--s-focus)">Focus</button>
+          <button class="btn btn-primary" disabled>Disabled</button>
+          <button class="btn btn-secondary"><span class="spinner inline"></span>Loading</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 INPUTS -->
+    <section id="inputs">
+      <div class="sec-head"><span class="idx">06</span><h2>Inputs</h2><span class="note">The search bar is the front door: full-width, gold focus ring, inline spinner during the 300ms debounce.</span></div>
+      <div class="grid g2">
+        <div class="card">
+          <div class="demo-label">search — idle</div>
+          <div class="search-wrap"><i data-lucide="search"></i><input class="input" placeholder="Search series, e.g. Dark, Severance, Chernobyl"></div>
+          <div class="demo-label" style="margin-top:20px">search — loading</div>
+          <div class="search-wrap"><i data-lucide="search"></i><input class="input focus" value="dark"><span class="spinner"></span></div>
+        </div>
+        <div class="card">
+          <div class="demo-label">text field states</div>
+          <div class="field" style="margin-bottom:14px"><label>Default</label><input class="input" placeholder="Your thoughts on this episode"></div>
+          <div class="field" style="margin-bottom:14px"><label>Error</label><input class="input is-error" value=""><span class="hint err">Comment can't be empty.</span></div>
+          <div class="field"><label>Disabled</label><input class="input" disabled value="Loading episode…"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="demo-label">comment textarea</div>
+        <textarea class="input" placeholder="Add a comment about this episode…"></textarea>
+        <div class="row" style="justify-content:space-between;margin-top:10px"><span class="hint">Only you can see this</span><button class="btn btn-primary sm">Post comment</button></div>
+      </div>
+    </section>
+
+    <!-- 07 CHIPS -->
+    <section id="chips">
+      <div class="sec-head"><span class="idx">07</span><h2>Chips</h2><span class="note">Genres are neutral. Gold marks the active filter, violet is AI-generated, green is watched.</span></div>
+      <div class="card"><div class="row">
+        <span class="badge">Sci-Fi</span><span class="badge">Thriller</span><span class="badge">Drama</span><span class="badge">Crime</span><span class="badge">Comedy</span>
+        <span class="badge b-gold">2017</span>
+        <span class="badge b-ai"><i data-lucide="sparkles"></i>AI insight</span>
+        <span class="badge b-pos"><i data-lucide="eye"></i>Watched</span>
+        <span class="badge b-pill">10 episodes</span>
+        <span class="badge b-pill b-gold">Season 1</span>
+      </div></div>
+    </section>
+
+    <!-- 08 TOGGLES -->
+    <section id="toggles">
+      <div class="sec-head"><span class="idx">08</span><h2>Toggles</h2><span class="note">The watched toggle is the most frequent interaction. Obvious at a glance, forgiving to tap.</span></div>
+      <div class="card"><div class="row" style="gap:24px">
+        <button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button>
+        <button class="watch-toggle on"><i data-lucide="eye"></i>Watched</button>
+        <span class="switch" role="switch" aria-checked="false"></span>
+        <span class="switch on" role="switch" aria-checked="true"></span>
+        <span class="checkbox"></span>
+        <span class="checkbox on"><i data-lucide="check"></i></span>
+      </div></div>
+    </section>
+
+    <!-- 09 CARDS -->
+    <section id="cards">
+      <div class="sec-head"><span class="idx">09</span><h2>Cards</h2><span class="note">2:3 poster on top; hover lifts 2px and brightens the surface. No shadow in dark mode.</span></div>
+      <div class="grid g3">
+        <div class="card tight series-card hoverable"><div class="poster g-dark">Dark</div><div class="body"><div class="title">Dark</div><div class="year">2017</div><div class="chips"><span class="badge">Sci-Fi</span><span class="badge">Thriller</span><span class="badge">Drama</span></div></div></div>
+        <div class="card tight series-card hoverable"><div class="poster g-matter">Dark Matter</div><div class="body"><div class="title">Dark Matter</div><div class="year">2024</div><div class="chips"><span class="badge">Drama</span><span class="badge">Sci-Fi</span><span class="badge">Thriller</span></div></div></div>
+        <div class="card elevated"><p class="label" style="margin-bottom:8px">Elevated card</p><p style="font-size:18px;font-weight:600">Season 1</p><p class="muted" style="margin:4px 0 14px">10 episodes</p><div class="progress-meta"><span>2 / 10 watched</span><span class="mono">20%</span></div><div class="progress"><div style="width:20%"></div></div></div>
+      </div>
+    </section>
+
+    <!-- 10 AI INSIGHT -->
+    <section id="insights">
+      <div class="sec-head"><span class="idx">10</span><h2>AI Insight</h2><span class="note">The only place violet appears. Reads like a well-informed friend, never a spec sheet. Always spoiler-free.</span></div>
+      <div class="grid g2">
+        <div class="insight"><div class="head"><i data-lucide="sparkles"></i>AI Insight</div><p>A labyrinthine time-travel saga that rewards patient viewers. Combines existential philosophy with family drama. If you enjoyed Primer or Predestination, Dark's non-linear narrative will captivate you.</p></div>
+        <div>
+          <div class="insight loading" style="margin-bottom:16px"><div class="head"><i data-lucide="sparkles"></i>Generating insight…</div><div class="sk line" style="width:92%"></div><div class="sk line" style="width:78%"></div><div class="sk line" style="width:60%;margin-bottom:0"></div></div>
+          <div class="insight fallback"><div class="head"><i data-lucide="sparkles"></i>AI Insight</div><p>AI insights temporarily unavailable. Check back later.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 EPISODE ROW -->
+    <section id="episodes">
+      <div class="sec-head"><span class="idx">11</span><h2>Episode Row</h2><span class="note">Mono code, Inter title, count and toggle right-aligned. Watched rows dim so unwatched ones stand out.</span></div>
+      <div class="card tight">
+        <div class="ep-row watched"><span class="code">S01E01</span><span class="t">Secrets</span><span class="cm"><i data-lucide="message-circle"></i>1</span><button class="watch-toggle on"><i data-lucide="eye"></i>Watched</button></div>
+        <div class="ep-row watched"><span class="code">S01E02</span><span class="t">Lies</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle on"><i data-lucide="eye"></i>Watched</button></div>
+        <div class="ep-row"><span class="code">S01E03</span><span class="t">Past and Present</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button></div>
+        <div class="ep-row"><span class="code">S01E04</span><span class="t">Double Lives</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button></div>
+      </div>
+    </section>
+
+    <!-- 12 ICONS -->
+    <section id="icons">
+      <div class="sec-head"><span class="idx">12</span><h2>Icons</h2><span class="note">Lucide. 16px inline, 22px standalone.</span></div>
+      <div class="grid g6">
+        <div class="icon-tile"><i data-lucide="search"></i>search</div>
+        <div class="icon-tile"><i data-lucide="eye"></i>eye</div>
+        <div class="icon-tile"><i data-lucide="eye-off"></i>eye-off</div>
+        <div class="icon-tile"><i data-lucide="message-circle"></i>message-circle</div>
+        <div class="icon-tile"><i data-lucide="sparkles"></i>sparkles</div>
+        <div class="icon-tile"><i data-lucide="chevron-down"></i>chevron-down</div>
+        <div class="icon-tile"><i data-lucide="arrow-left"></i>arrow-left</div>
+        <div class="icon-tile"><i data-lucide="check"></i>check</div>
+        <div class="icon-tile"><i data-lucide="alert-circle"></i>alert-circle</div>
+        <div class="icon-tile"><i data-lucide="refresh-cw"></i>refresh-cw</div>
+        <div class="icon-tile"><i data-lucide="moon"></i>moon</div>
+        <div class="icon-tile"><i data-lucide="sun"></i>sun</div>
+      </div>
+    </section>
+
+    <!-- 13 STATES -->
+    <section id="states">
+      <div class="sec-head"><span class="idx">13</span><h2>Interaction States</h2><span class="note">Skeletons for page loads. Toasts with retry for errors. Empty states in the product's voice.</span></div>
+      <p class="label" style="margin-bottom:12px">Loading — skeleton</p>
+      <div class="grid g3">
+        <div class="card tight"><div class="sk poster"></div><div class="series-card"><div class="body"><div class="sk line" style="width:60%"></div><div class="sk line" style="width:30%"></div></div></div></div>
+        <div class="card tight"><div class="sk poster"></div><div class="series-card"><div class="body"><div class="sk line" style="width:70%"></div><div class="sk line" style="width:30%"></div></div></div></div>
+        <div class="card tight"><div class="sk poster"></div><div class="series-card"><div class="body"><div class="sk line" style="width:50%"></div><div class="sk line" style="width:30%"></div></div></div></div>
+      </div>
+      <p class="label" style="margin:24px 0 12px">Error — toast</p>
+      <div class="row">
+        <div class="toast"><i data-lucide="alert-circle" style="color:var(--s-critical)"></i>Failed to load series.<span class="act">Retry</span></div>
+        <div class="toast success"><i data-lucide="check" style="color:var(--s-positive)"></i>Marked S01E03 as watched</div>
+      </div>
+      <p class="label" style="margin:24px 0 12px">Empty</p>
+      <div class="grid g2">
+        <div class="card empty"><i data-lucide="search"></i><h3>Discover your next series</h3><p>Search by title to see details, episodes and AI insights.</p></div>
+        <div class="card empty"><i data-lucide="search"></i><h3>No series found for "xyzabc"</h3><p>Try a different search.</p></div>
+      </div>
+      <p class="label" style="margin:24px 0 12px">Success — watched flash</p>
+      <div class="card tight"><div class="ep-row" style="background:rgba(34,197,94,.10)"><span class="code">S01E03</span><span class="t">Past and Present</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle on"><i data-lucide="eye"></i>Watched</button></div></div>
+      <p class="label" style="margin:24px 0 12px">Comments — minimal, not social</p>
+      <div class="card">
+        <div class="comment"><div class="when">2026-09-12 · 22:41</div><p>Mind-blowing from episode 1. The family tree is impossible to track without a diagram.</p></div>
+        <div class="comment"><div class="when">2026-09-14 · 23:05</div><p>The cave scene gave me chills. Pure atmosphere.</p></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<script>
+function applyTheme(n){
+  var h=document.documentElement;
+  h.setAttribute('data-theme',n);
+  document.getElementById('theme-label').textContent=n==='dark'?'Dark':'Light';
+  document.getElementById('theme-toggle').querySelector('i,svg').outerHTML='<i data-lucide="'+(n==='dark'?'moon':'sun')+'"></i>';
+  document.querySelectorAll('.swatch-hex[data-d]').forEach(function(e){e.textContent=n==='dark'?e.dataset.d:e.dataset.l});
+  lucide.createIcons();
+}
+function toggleTheme(){
+  var n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  applyTheme(n);localStorage.setItem('theme',n);
+}
+(function(){var s=localStorage.getItem('theme');applyTheme(s||'dark');})();
+var links=[].slice.call(document.querySelectorAll('.ds-nav a'));
+var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+document.querySelectorAll('.content section').forEach(function(s){obs.observe(s)});
+</script>
+</body>
+</html>

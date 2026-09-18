@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven2U Design Spec</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f7f4ee; --surface:#ffffff; --surface2:#f0ece2;
+  --border:rgba(30,58,95,.14); --text:#1b2438; --dim:#5d6b85;
+  --gold:#a97e14; --gold-dim:rgba(169,126,20,.12);
+  --green:#0e7a4e; --green-dim:rgba(14,122,78,.10);
+  --red:#b3261e; --amber:#9a5b04; --amber-dim:rgba(154,91,4,.12);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --fig-ink:currentColor; --fig-accent:#a97e14; --fig-muted:rgba(30,58,95,.35);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1726; --surface:#152036; --surface2:#1b2843;
+    --border:rgba(255,255,255,.09); --text:#e8ecf4; --dim:#8fa0bd;
+    --gold:#d4a73a; --gold-dim:rgba(212,167,58,.14);
+    --green:#4cc38a; --green-dim:rgba(76,195,138,.13);
+    --red:#e5534b; --amber:#d9a441; --amber-dim:rgba(217,119,6,.14);
+    --fig-accent:#d4a73a; --fig-muted:rgba(255,255,255,.25);
+  }
+}
+*{box-sizing:border-box;margin:0;min-width:0}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 80% 40% at 50% -10%,var(--gold-dim),transparent);
+  color:var(--text);font-family:var(--sans);font-size:14.5px;line-height:1.6;
+  max-width:960px;margin:0 auto;padding:48px 32px 80px;
+}
+h1{font-size:32px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
+h2{font-size:18px;font-weight:600;margin:52px 0 10px;color:var(--text)}
+h3{font-size:14.5px;font-weight:600;margin:28px 0 8px}
+h2:first-of-type{margin-top:32px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:600}
+.sub{color:var(--dim);font-size:13px;margin-bottom:8px;max-width:70ch}
+.hl{color:var(--gold);font-weight:700}
+.version{font-size:12px;color:var(--dim);margin-bottom:24px}
+p{margin:8px 0;max-width:72ch}
+ul,ol{margin:8px 0 8px 20px;max-width:72ch}
+li{margin:4px 0}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+pre{font-family:var(--mono);font-size:12px;line-height:1.5;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;overflow-x:auto;margin:12px 0}
+pre code{background:none;border:none;padding:0}
+.card{border:1px solid var(--border);border-radius:10px;padding:20px 24px;background:var(--surface);margin:14px 0}
+.card b{display:block;margin-bottom:6px;font-weight:600}
+.card.accent{border-color:var(--gold);background:linear-gradient(135deg,var(--gold-dim),var(--surface))}
+.card.warn{border-color:var(--amber);background:linear-gradient(135deg,var(--amber-dim),var(--surface))}
+.card.green{border-color:var(--green);background:linear-gradient(135deg,var(--green-dim),var(--surface))}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;font-size:13px}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{font-size:11.5px}
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:99px;font-weight:600}
+.tag.gold{background:var(--gold-dim);color:var(--gold)}
+.tag.green{background:var(--green-dim);color:var(--green)}
+.tag.dim{background:var(--surface2);color:var(--dim)}
+.phase-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:16px 0}
+.phase-step{text-align:center;padding:10px 6px;border-radius:8px;font-size:11px;border:1px solid var(--border);background:var(--surface)}
+.phase-step .num{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold);display:block;margin-bottom:4px}
+.phase-step .lbl{color:var(--dim);font-size:10px;line-height:1.3}
+@media(max-width:720px){.phase-strip{grid-template-columns:repeat(4,1fr)}}
+svg.fig{width:100%;height:auto;margin:20px 0;display:block}
+figcaption{font-style:italic;font-size:12px;color:var(--dim);margin:-12px 0 16px;text-align:center}
+.toc{list-style:none;padding:0;margin:16px 0;columns:2}
+.toc li{margin:4px 0}
+.toc a{color:var(--gold);text-decoration:none;font-size:13px}
+.toc a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid var(--border);margin:40px 0}
+footer{margin-top:48px;color:var(--dim);font-size:11.5px;border-top:1px solid var(--border);padding-top:14px}
+@media(prefers-reduced-motion:no-preference){
+  .card,table{animation:up .5s ease both}
+  @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Design Specification v1.0</div>
+  <h1>Seven2U</h1>
+  <p class="sub">Interactive TV series companion: search series via TVMaze, track watched episodes, leave comments, and receive AI-generated insights. Python Clean Architecture backend, React frontend, PostgreSQL, one <code>docker compose up</code>.</p>
+  <div class="version">beecrowd Software Architect challenge &middot; Ready for implementation</div>
+</header>
+
+<nav>
+  <ol class="toc">
+    <li><a href="#overview">1. Overview</a></li>
+    <li><a href="#architecture">2. Architecture</a></li>
+    <li><a href="#backend">3. Backend Structure</a></li>
+    <li><a href="#contract">4. API Contract</a></li>
+    <li><a href="#frontend">5. Frontend Structure</a></li>
+    <li><a href="#ai">6. AI Integration</a></li>
+    <li><a href="#data">7. Data Model</a></li>
+    <li><a href="#security">8. Security</a></li>
+    <li><a href="#testing">9. Testing Strategy</a></li>
+    <li><a href="#docker">10. Docker &amp; Infrastructure</a></li>
+    <li><a href="#sequencing">11. Sequencing</a></li>
+  </ol>
+</nav>
+
+<h2 id="overview">1. Overview</h2>
+<p>Seven2U ("Seven" = seventh art, "2U" = to you) is the series module of an early-stage streaming platform. A user searches for a series, opens its detail page, sees episodes grouped by season, marks episodes watched, leaves comments on the series or an episode, and asks for an AI insight that describes tone, themes and what to expect, without spoilers.</p>
+<p>Series catalogue data is never stored: TVMaze is the source of truth for shows and episodes. Seven2U persists only what the user creates (watched state, comments) and joins it onto TVMaze data at read time. The AI provider sits behind a Protocol and degrades to a template-based insight when the LLM is unavailable, so the feature never breaks the page.</p>
+
+<div class="card accent">
+  <b>Design principles</b>
+  <ul>
+    <li><strong>Dependencies point inward.</strong> <code>api &rarr; services &rarr; repositories &rarr; infrastructure</code>, with <code>domain</code> shared by all and depending on nothing.</li>
+    <li><strong>Own only user data.</strong> TVMaze IDs are foreign references; we never mirror the catalogue.</li>
+    <li><strong>AI is a plug, not a pillar.</strong> <code>InsightProvider</code> Protocol; HuggingFace is one implementation; a template provider is the fallback. The page renders with or without it.</li>
+    <li><strong>Boring tools, sharp boundaries.</strong> FastAPI, SQLAlchemy, httpx, Pydantic, React + Vite + Tailwind. No framework where a function will do.</li>
+    <li><strong>Testable by construction.</strong> Services take Protocols; tests inject in-memory fakes. No mocking framework needed for domain and service tests.</li>
+  </ul>
+</div>
+
+<h3>Evaluation mapping</h3>
+<table>
+<thead><tr><th>Criterion</th><th>Weight</th><th>Where this spec answers it</th></tr></thead>
+<tbody>
+<tr><td>Architecture &amp; Design</td><td>30%</td><td>&sect;2 layers and dependency rule, &sect;3 module layout, &sect;6 provider isolation</td></tr>
+<tr><td>Functionality &amp; Stability</td><td>30%</td><td>&sect;4 contract with explicit error cases, &sect;5 loading/error/empty states, &sect;10 single-command startup</td></tr>
+<tr><td>Code Quality</td><td>20%</td><td>Ruff + type hints + Google docstrings (Shodo), small modules, one responsibility each</td></tr>
+<tr><td>AI Integration</td><td>10%</td><td>&sect;6 Protocol, HuggingFace adapter, template fallback, timeout policy</td></tr>
+<tr><td>Testability</td><td>10%</td><td>&sect;9 unit tests on domain + services via fakes, integration tests on API</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="architecture">2. Architecture</h2>
+
+<figure>
+<svg class="fig" viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--fig-ink)"/></marker></defs>
+  <style>
+    text{font-family:var(--mono,'monospace');font-size:11px;fill:var(--fig-ink)}
+    rect{fill:var(--surface);stroke:var(--fig-muted);stroke-width:1;rx:6}
+    line{stroke:var(--fig-muted);stroke-width:1;marker-end:url(#ah)}
+    .new rect{stroke:var(--fig-accent);stroke-width:2}
+    .new text{fill:var(--fig-accent);font-weight:700}
+    .lbl{font-size:10px;fill:var(--dim)}
+    .band{fill:none;stroke:var(--fig-muted);stroke-dasharray:4 3;rx:8}
+  </style>
+  <text x="20" y="16" class="lbl">FRONTEND (React + Vite + Tailwind)</text>
+  <g transform="translate(20,24)"><rect width="200" height="34"/><text x="100" y="21" text-anchor="middle">features/search</text></g>
+  <g transform="translate(240,24)"><rect width="200" height="34"/><text x="100" y="21" text-anchor="middle">features/series</text></g>
+  <g transform="translate(460,24)"><rect width="200" height="34"/><text x="100" y="21" text-anchor="middle">features/episode</text></g>
+  <g transform="translate(680,24)"><rect width="200" height="34"/><text x="100" y="21" text-anchor="middle">lib/api.ts</text></g>
+  <line x1="780" y1="58" x2="780" y2="92"/>
+  <text x="20" y="86" class="lbl">BACKEND (FastAPI, Clean Architecture)</text>
+  <rect class="band" x="14" y="92" width="872" height="150"/>
+  <g transform="translate(30,102)"><rect width="200" height="32"/><text x="100" y="20" text-anchor="middle">api/routes + schemas</text></g>
+  <g transform="translate(30,148)"><rect width="200" height="32"/><text x="100" y="20" text-anchor="middle">services</text></g>
+  <g transform="translate(30,194)"><rect width="200" height="32"/><text x="100" y="20" text-anchor="middle">repositories (Protocols)</text></g>
+  <line x1="130" y1="134" x2="130" y2="148"/><line x1="130" y1="180" x2="130" y2="194"/>
+  <g class="new" transform="translate(300,148)"><rect width="150" height="32"/><text x="75" y="20" text-anchor="middle">domain</text></g>
+  <text x="375" y="200" text-anchor="middle" class="lbl">Series, Episode, Comment, WatchedEpisode</text>
+  <text x="375" y="214" text-anchor="middle" class="lbl">errors, pure rules. Depends on nothing.</text>
+  <g transform="translate(500,102)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">infra/tvmaze</text></g>
+  <g transform="translate(500,148)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">infra/ai (providers)</text></g>
+  <g transform="translate(500,194)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">infra/db (SQLAlchemy)</text></g>
+  <g transform="translate(700,148)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">config (settings)</text></g>
+  <line x1="230" y1="164" x2="300" y2="164"/>
+  <line x1="230" y1="210" x2="500" y2="210"/>
+  <line x1="230" y1="118" x2="500" y2="118"/>
+  <line x1="230" y1="160" x2="500" y2="164" style="stroke-dasharray:3 3"/>
+  <text x="20" y="270" class="lbl">EXTERNAL</text>
+  <g transform="translate(500,280)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">api.tvmaze.com</text></g>
+  <g transform="translate(300,280)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">HuggingFace Inference</text></g>
+  <g transform="translate(700,280)"><rect width="170" height="32"/><text x="85" y="20" text-anchor="middle">PostgreSQL 16</text></g>
+  <line x1="585" y1="134" x2="585" y2="280" style="stroke-dasharray:3 3"/>
+  <line x1="500" y1="164" x2="385" y2="280" style="stroke-dasharray:3 3"/>
+  <line x1="670" y1="210" x2="785" y2="280" style="stroke-dasharray:3 3"/>
+</svg>
+<figcaption>Solid arrows: import direction. Dashed: network I/O. <code>domain</code> (highlighted) is imported by every layer and imports none.</figcaption>
+</figure>
+
+<h3>Dependency rule</h3>
+<table>
+<thead><tr><th>Layer</th><th>May import</th><th>Responsibility</th><th>Must not</th></tr></thead>
+<tbody>
+<tr><td><code>domain</code></td><td>stdlib only</td><td>Entities, value objects, domain errors, pure rules (e.g. season progress)</td><td>Import FastAPI, SQLAlchemy, httpx, Pydantic</td></tr>
+<tr><td><code>repositories</code></td><td>domain</td><td>Protocols describing persistence and catalogue access</td><td>Contain SQL or HTTP</td></tr>
+<tr><td><code>services</code></td><td>domain, repositories</td><td>Use cases: search, detail with progress, toggle watched, add comment, generate insight</td><td>Know about HTTP status codes or request objects</td></tr>
+<tr><td><code>infrastructure</code></td><td>domain, repositories</td><td>Concrete adapters: SQLAlchemy repos, TVMaze client, AI providers</td><td>Be imported by services directly (only via Protocol + DI)</td></tr>
+<tr><td><code>api</code></td><td>services, domain, schemas</td><td>Routes, Pydantic schemas, dependency wiring, error mapping</td><td>Contain business rules</td></tr>
+</tbody>
+</table>
+
+<h3>SOLID in practice</h3>
+<div class="grid2">
+  <div class="card"><b>S: one use case per service method</b><code>TrackingService.toggle_watched</code> does one thing. Seasons grouping lives in <code>domain/progress.py</code>, not in the route.</div>
+  <div class="card"><b>O: new AI provider = new file</b>Adding Ollama or OpenAI means one class implementing <code>InsightProvider</code>. No existing code changes.</div>
+  <div class="card"><b>L: fakes are drop-ins</b><code>InMemoryWatchedRepository</code> satisfies the same Protocol as the SQLAlchemy one; services cannot tell them apart.</div>
+  <div class="card"><b>I + D: small Protocols, injected</b><code>ShowCatalog</code>, <code>WatchedRepository</code>, <code>CommentRepository</code>, <code>InsightProvider</code>. Services receive them via constructor; FastAPI <code>Depends</code> builds them.</div>
+</div>
+
+<hr>
+
+<h2 id="backend">3. Backend Structure</h2>
+
+<pre><code>backend/
+  pyproject.toml              # uv, ruff (80 cols), pytest, mypy
+  app/
+    main.py                   # create_app(): routers, CORS, static, lifespan
+    config.py                 # Settings(BaseSettings): DATABASE_URL, HF_API_TOKEN, ...
+    domain/
+      models.py               # Series, Episode, Season, Comment, WatchedEpisode
+      progress.py             # group_by_season(), completion_ratio()
+      errors.py               # NotFoundError, UpstreamError, ValidationError
+    repositories/
+      protocols.py            # ShowCatalog, WatchedRepository, CommentRepository
+    services/
+      show_service.py         # search(), get_detail(), list_episodes()
+      tracking_service.py     # toggle_watched(), watched_ids_for_show()
+      comment_service.py      # add(), list_for()
+      insight_service.py      # series_insight(), episode_insight()
+    infrastructure/
+      tvmaze/
+        client.py             # httpx.AsyncClient adapter -> domain models
+        mapping.py            # raw JSON -> Series / Episode
+      db/
+        session.py            # engine, async_sessionmaker, init_db()
+        tables.py             # SQLAlchemy ORM: WatchedEpisodeRow, CommentRow
+        watched_repository.py # SqlWatchedRepository
+        comment_repository.py # SqlCommentRepository
+      ai/
+        protocol.py           # InsightProvider (Protocol), InsightRequest
+        prompt.py             # build_series_prompt(), build_episode_prompt()
+        huggingface.py        # HuggingFaceInsightProvider
+        template.py           # TemplateInsightProvider (fallback, no network)
+        resilient.py          # ResilientInsightProvider(primary, fallback, timeout)
+    api/
+      deps.py                 # get_session, get_show_service, get_insight_provider...
+      errors.py               # domain error -> HTTP mapping
+      schemas/
+        shows.py  tracking.py  comments.py  insights.py
+      routes/
+        shows.py  tracking.py  comments.py  insights.py  health.py
+  tests/
+    unit/                     # domain + services, fakes only
+    integration/              # httpx AsyncClient against app, real Postgres via compose
+    fakes.py                  # InMemory* repositories, StubCatalog, StubProvider</code></pre>
+
+<h3>Domain models</h3>
+<pre><code># app/domain/models.py
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import StrEnum
+
+
+@dataclass(frozen=True, slots=True)
+class Series:
+    id: int
+    name: str
+    summary: str | None
+    genres: tuple[str, ...]
+    premiered: str | None
+    image_url: str | None
+    rating: float | None
+
+
+@dataclass(frozen=True, slots=True)
+class Episode:
+    id: int
+    show_id: int
+    season: int
+    number: int
+    name: str
+    summary: str | None
+    airdate: str | None
+    image_url: str | None
+
+
+class CommentTarget(StrEnum):
+    SHOW = "show"
+    EPISODE = "episode"
+
+
+@dataclass(frozen=True, slots=True)
+class Comment:
+    id: int
+    target_type: CommentTarget
+    target_id: int
+    body: str
+    created_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class WatchedEpisode:
+    episode_id: int
+    show_id: int
+    watched_at: datetime</code></pre>
+
+<p>Domain models are frozen dataclasses, not Pydantic. Pydantic lives at the boundaries (<code>api/schemas</code>, <code>config.py</code>). This keeps the domain free of validation-library semantics and keeps mypy strict.</p>
+
+<h3>Pure domain rules</h3>
+<pre><code># app/domain/progress.py
+@dataclass(frozen=True, slots=True)
+class SeasonProgress:
+    season: int
+    episodes: tuple[Episode, ...]
+    watched_ids: frozenset[int]
+
+    @property
+    def completion(self) -> float:
+        if not self.episodes:
+            return 0.0
+        return len(self.watched_ids & {e.id for e in self.episodes}) / len(self.episodes)
+
+
+def group_by_season(
+    episodes: Iterable[Episode], watched_ids: frozenset[int]
+) -> list[SeasonProgress]: ...</code></pre>
+
+<h3>Repository Protocols</h3>
+<pre><code># app/repositories/protocols.py
+class ShowCatalog(Protocol):
+    async def search(self, query: str) -> list[Series]: ...
+    async def get(self, show_id: int) -> Series: ...          # raises NotFoundError
+    async def episodes(self, show_id: int) -> list[Episode]: ...
+
+
+class WatchedRepository(Protocol):
+    async def ids_for_show(self, show_id: int) -> frozenset[int]: ...
+    async def mark(self, show_id: int, episode_id: int) -> WatchedEpisode: ...
+    async def unmark(self, episode_id: int) -> None: ...
+
+
+class CommentRepository(Protocol):
+    async def add(self, target: CommentTarget, target_id: int, body: str) -> Comment: ...
+    async def list_for(self, target: CommentTarget, target_id: int) -> list[Comment]: ...</code></pre>
+
+<h3>Services</h3>
+<table>
+<thead><tr><th>Service</th><th>Depends on</th><th>Methods</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>ShowService</code></td><td><code>ShowCatalog</code></td><td><code>search(q)</code>, <code>get_detail(id)</code></td><td>Strips HTML from TVMaze summaries in <code>mapping.py</code>, not here</td></tr>
+<tr><td><code>TrackingService</code></td><td><code>ShowCatalog</code>, <code>WatchedRepository</code></td><td><code>episodes_with_progress(show_id)</code>, <code>set_watched(show_id, ep_id, bool)</code></td><td>Verifies the episode belongs to the show before writing</td></tr>
+<tr><td><code>CommentService</code></td><td><code>CommentRepository</code></td><td><code>add(target, id, body)</code>, <code>list_for(target, id)</code></td><td>Trims body; rejects empty (domain <code>ValidationError</code>)</td></tr>
+<tr><td><code>InsightService</code></td><td><code>ShowCatalog</code>, <code>CommentRepository</code>, <code>InsightProvider</code></td><td><code>for_series(id)</code>, <code>for_episode(show_id, ep_id)</code></td><td>Builds <code>InsightRequest</code> from series + genres + summary + user comments</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="contract">4. API Contract</h2>
+<p>All routes are prefixed <code>/api</code>. Responses are JSON. Frontend static build is served from <code>/</code> by the same FastAPI process, so the whole app is one origin on port 7777.</p>
+
+<table>
+<thead><tr><th>Method</th><th>Path</th><th>Purpose</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td><code>/api/health</code></td><td>Liveness + DB reachability</td><td><code>{status, db, ai_provider}</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/api/shows/search?q=</code></td><td>Search TVMaze</td><td><code>SeriesSummary[]</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/api/shows/{show_id}</code></td><td>Series detail</td><td><code>SeriesDetail</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/api/shows/{show_id}/episodes</code></td><td>Episodes by season with watched state and progress</td><td><code>SeasonOut[]</code></td></tr>
+<tr><td><code>PUT</code></td><td><code>/api/shows/{show_id}/episodes/{episode_id}/watched</code></td><td>Set watched state (idempotent)</td><td><code>WatchedOut</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/api/comments/{target}/{target_id}</code></td><td>List comments (<code>target</code> = show | episode)</td><td><code>CommentOut[]</code></td></tr>
+<tr><td><code>POST</code></td><td><code>/api/comments/{target}/{target_id}</code></td><td>Add comment</td><td><code>201 CommentOut</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/api/insights/shows/{show_id}</code></td><td>AI insight for series</td><td><code>InsightOut</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/api/insights/shows/{show_id}/episodes/{episode_id}</code></td><td>AI insight for episode</td><td><code>InsightOut</code></td></tr>
+</tbody>
+</table>
+
+<h3>Schemas</h3>
+<pre><code># api/schemas/shows.py
+class SeriesSummary(BaseModel):
+    id: int
+    name: str
+    premiered: str | None
+    genres: list[str]
+    image_url: str | None
+    rating: float | None
+
+class SeriesDetail(SeriesSummary):
+    summary: str | None          # HTML stripped
+
+# api/schemas/tracking.py
+class EpisodeOut(BaseModel):
+    id: int
+    season: int
+    number: int
+    name: str
+    summary: str | None
+    airdate: str | None
+    watched: bool
+
+class SeasonOut(BaseModel):
+    season: int
+    completion: float            # 0.0 .. 1.0
+    episodes: list[EpisodeOut]
+
+class WatchedIn(BaseModel):
+    watched: bool
+
+class WatchedOut(BaseModel):
+    episode_id: int
+    watched: bool
+    watched_at: datetime | None
+
+# api/schemas/comments.py
+class CommentIn(BaseModel):
+    body: str = Field(min_length=1, max_length=2000)
+
+class CommentOut(BaseModel):
+    id: int
+    body: str
+    created_at: datetime
+
+# api/schemas/insights.py
+class InsightOut(BaseModel):
+    text: str
+    source: Literal["llm", "fallback"]
+    provider: str                # "huggingface" | "template"
+    generated_at: datetime</code></pre>
+
+<h3>Error mapping</h3>
+<table>
+<thead><tr><th>Domain error</th><th>HTTP</th><th>Body</th></tr></thead>
+<tbody>
+<tr><td><code>NotFoundError</code> (TVMaze 404 or episode not in show)</td><td>404</td><td><code>{"detail": "Show 999 not found"}</code></td></tr>
+<tr><td><code>ValidationError</code> (empty comment, empty query)</td><td>422</td><td><code>{"detail": "..."}</code></td></tr>
+<tr><td><code>UpstreamError</code> (TVMaze timeout / 5xx)</td><td>502</td><td><code>{"detail": "TVMaze unavailable"}</code></td></tr>
+<tr><td>AI provider failure</td><td>200</td><td>Never an error: <code>source: "fallback"</code></td></tr>
+</tbody>
+</table>
+<p>The <code>source</code> field on <code>InsightOut</code> is the contract for graceful degradation: the UI shows a small "generated from summary" note instead of a violet AI badge when it is <code>fallback</code>.</p>
+
+<hr>
+
+<h2 id="frontend">5. Frontend Structure</h2>
+
+<pre><code>frontend/
+  src/
+    main.tsx                    # BrowserRouter, Layout
+    App.tsx                     # routes: / and /shows/:id
+    lib/
+      api.ts                    # typed fetch wrapper, ApiError
+      types.ts                  # mirrors api/schemas
+    components/                 # shared, presentational
+      TopBar.tsx  Skeleton.tsx  Toast.tsx  EmptyState.tsx  GenreChip.tsx
+    features/
+      search/
+        useSearch.ts            # debounce 300ms, AbortController, {results, status}
+        SearchBar.tsx
+        SeriesCard.tsx
+        SearchPage.tsx
+      series/
+        useSeriesDetail.ts      # detail + seasons in parallel
+        SeriesHero.tsx
+        SeasonAccordion.tsx
+        ProgressBar.tsx
+        SeriesPage.tsx
+      episode/
+        useEpisodeTracking.ts   # optimistic toggle, rollback on error
+        EpisodeRow.tsx
+      comments/
+        useComments.ts
+        CommentList.tsx  CommentForm.tsx
+      insight/
+        useInsight.ts           # lazy: fetch on click, cache per key
+        InsightCard.tsx         # violet border, Sparkles icon, fallback note</code></pre>
+
+<h3>Component hierarchy</h3>
+<pre><code>App
++-- TopBar                       logo + SearchBar (on detail page: back arrow)
++-- Routes
+    +-- SearchPage
+    |   +-- SearchBar            debounced input, inline spinner
+    |   +-- SeriesCard[]         poster, title, year, GenreChip[]
+    |   +-- EmptyState           "Start searching" | "No results"
+    +-- SeriesPage
+        +-- SeriesHero           poster, title, genres, rating, summary
+        +-- InsightCard          series-level insight (lazy)
+        +-- CommentList + CommentForm   target=show
+        +-- SeasonAccordion[]    header: "Season N" + ProgressBar
+            +-- EpisodeRow[]     code S01E02, title, Eye toggle, MessageCircle, Sparkles
+                +-- InsightCard  (expanded, episode-level)
+                +-- CommentList + CommentForm   target=episode</code></pre>
+
+<h3>Hooks</h3>
+<pre><code>function useSearch(query: string): {
+  results: SeriesSummary[]; status: "idle" | "loading" | "ok" | "error";
+}
+// 300ms debounce; AbortController cancels stale requests; empty query = idle
+
+function useSeriesDetail(showId: number): {
+  series?: SeriesDetail; seasons?: SeasonOut[]; status; retry(): void;
+}
+
+function useEpisodeTracking(showId: number, seasons: SeasonOut[]): {
+  seasons: SeasonOut[]; toggle(episodeId: number): Promise&lt;void&gt;;
+}
+// optimistic: flips watched + recomputes completion locally, PUT, rollback + toast on failure
+
+function useInsight(key: string, url: string): {
+  insight?: InsightOut; status; load(): void;
+}</code></pre>
+
+<h3>State management</h3>
+<p>No global store. Server state lives in feature hooks (<code>useState</code> + <code>useEffect</code>) with a tiny in-memory cache for insights. The app has two routes and no cross-feature shared state beyond the show ID in the URL, so Redux/Zustand/TanStack Query would be weight without benefit. If a third surface appeared (a "my shows" dashboard), TanStack Query is the upgrade path.</p>
+
+<h3>Interaction states</h3>
+<table>
+<thead><tr><th>State</th><th>Search</th><th>Detail</th><th>Watched toggle</th><th>Insight</th></tr></thead>
+<tbody>
+<tr><td>Loading</td><td>Spinner inside input</td><td>Skeleton hero + 3 skeleton rows</td><td>Instant (optimistic)</td><td>Pulse skeleton inside card</td></tr>
+<tr><td>Error</td><td>Toast + retry</td><td>Inline error card + retry</td><td>Rollback + toast</td><td>Falls back to <code>source: fallback</code>; never an error UI</td></tr>
+<tr><td>Empty</td><td>"No results for X"</td><td>"No episodes listed yet"</td><td>n/a</td><td>n/a</td></tr>
+<tr><td>Success</td><td>Grid of cards</td><td>Hero + seasons</td><td>Green flash on row</td><td>Violet-bordered card</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="ai">6. AI Integration</h2>
+
+<figure>
+<svg class="fig" viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ah2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--fig-ink)"/></marker></defs>
+  <style>
+    text{font-family:var(--mono,'monospace');font-size:11px;fill:var(--fig-ink)}
+    rect{fill:var(--surface);stroke:var(--fig-muted);stroke-width:1;rx:6}
+    line{stroke:var(--fig-muted);stroke-width:1;marker-end:url(#ah2)}
+    .new rect{stroke:var(--fig-accent);stroke-width:2}
+    .new text{fill:var(--fig-accent);font-weight:700}
+    .lbl{font-size:10px;fill:var(--dim)}
+  </style>
+  <text x="20" y="16" class="lbl">SERVICES</text>
+  <g transform="translate(20,26)"><rect width="150" height="34"/><text x="75" y="21" text-anchor="middle">InsightService</text></g>
+  <text x="20" y="96" class="lbl">INFRASTRUCTURE / AI</text>
+  <g class="new" transform="translate(20,106)"><rect width="150" height="34"/><text x="75" y="21" text-anchor="middle">InsightProvider</text></g>
+  <text x="95" y="160" text-anchor="middle" class="lbl">Protocol: generate(req) -> Insight</text>
+  <line x1="95" y1="60" x2="95" y2="106"/>
+  <g transform="translate(230,106)"><rect width="190" height="34"/><text x="95" y="21" text-anchor="middle">ResilientInsightProvider</text></g>
+  <line x1="170" y1="123" x2="230" y2="123"/>
+  <g transform="translate(480,60)"><rect width="190" height="34"/><text x="95" y="21" text-anchor="middle">HuggingFaceProvider</text></g>
+  <g transform="translate(480,150)"><rect width="190" height="34"/><text x="95" y="21" text-anchor="middle">TemplateProvider</text></g>
+  <line x1="420" y1="116" x2="480" y2="80"/>
+  <line x1="420" y1="130" x2="480" y2="164"/>
+  <text x="450" y="70" class="lbl">primary</text>
+  <text x="440" y="180" class="lbl">fallback</text>
+  <g transform="translate(720,60)"><rect width="160" height="34"/><text x="80" y="21" text-anchor="middle">HF Inference API</text></g>
+  <line x1="670" y1="77" x2="720" y2="77" style="stroke-dasharray:3 3"/>
+  <text x="575" y="210" text-anchor="middle" class="lbl">timeout 8s · any exception · empty text  =>  fallback, source="fallback"</text>
+</svg>
+<figcaption>Services see only the Protocol. Composition happens in <code>api/deps.py</code>, chosen by settings.</figcaption>
+</figure>
+
+<h3>Protocol</h3>
+<pre><code># app/infrastructure/ai/protocol.py
+@dataclass(frozen=True, slots=True)
+class InsightRequest:
+    subject: Literal["series", "episode"]
+    title: str
+    summary: str | None
+    genres: tuple[str, ...]
+    user_comments: tuple[str, ...] = ()
+    episode_code: str | None = None      # "S01E02"
+
+
+@dataclass(frozen=True, slots=True)
+class Insight:
+    text: str
+    provider: str
+
+
+class InsightProvider(Protocol):
+    name: str
+    async def generate(self, request: InsightRequest) -> Insight: ...</code></pre>
+
+<h3>Implementations</h3>
+<table>
+<thead><tr><th>Provider</th><th>File</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td><code>HuggingFaceInsightProvider</code></td><td><code>infrastructure/ai/huggingface.py</code></td><td>POST to HF Inference API (chat-completions endpoint, model from <code>HF_MODEL</code>, default an instruct model). Prompt from <code>prompt.py</code>. Returns trimmed text; raises on non-200 or empty</td></tr>
+<tr><td><code>TemplateInsightProvider</code></td><td><code>infrastructure/ai/template.py</code></td><td>Pure function of the request: genre-driven tone sentence + first two sentences of summary + "N viewers left notes" line. No network. Deterministic (tested exactly)</td></tr>
+<tr><td><code>ResilientInsightProvider</code></td><td><code>infrastructure/ai/resilient.py</code></td><td>Wraps primary + fallback. <code>asyncio.wait_for(primary, timeout)</code>; on <code>TimeoutError</code> or any <code>Exception</code>, logs and returns fallback result. Also used when <code>HF_API_TOKEN</code> is unset (primary = None)</td></tr>
+</tbody>
+</table>
+
+<h3>Prompt policy</h3>
+<pre><code>SYSTEM: You are a TV critic writing a short, spoiler-free preview.
+        Describe tone, themes and what kind of viewer will enjoy it.
+        Max 120 words. Never reveal plot outcomes.
+USER:   Title: {title} {episode_code}
+        Genres: {genres}
+        Official summary: &lt;&lt;&lt;{summary}&gt;&gt;&gt;
+        Viewer notes (may be empty): &lt;&lt;&lt;{comments}&gt;&gt;&gt;</code></pre>
+<p>Summary and comments are wrapped in delimiters and passed as data. Comment text is user input; the prompt instructs the model to treat it as notes, and the output is rendered as plain text (never HTML) on the frontend.</p>
+
+<div class="card warn"><b>Why HuggingFace as default</b>Free tier, no credit card, a single token in <code>.env</code>. The evaluator can run the app with zero AI config (template fallback) or with one env var (real LLM). Both paths return the same schema.</div>
+
+<hr>
+
+<h2 id="data">7. Data Model</h2>
+
+<figure>
+<svg class="fig" viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text{font-family:var(--mono,'monospace');font-size:11px;fill:var(--fig-ink)}
+    rect{fill:var(--surface);stroke:var(--fig-muted);stroke-width:1;rx:6}
+    .hdr{fill:var(--fig-accent);font-weight:700}
+    .lbl{font-size:10px;fill:var(--dim)}
+    line{stroke:var(--fig-muted);stroke-width:1;stroke-dasharray:3 3}
+  </style>
+  <g transform="translate(40,20)">
+    <rect width="280" height="130"/>
+    <text x="14" y="22" class="hdr">watched_episodes</text>
+    <text x="14" y="46">id            serial PK</text>
+    <text x="14" y="64">show_id       integer NOT NULL</text>
+    <text x="14" y="82">episode_id    integer NOT NULL UNIQUE</text>
+    <text x="14" y="100">watched_at    timestamptz NOT NULL</text>
+    <text x="14" y="122" class="lbl">idx: (show_id)</text>
+  </g>
+  <g transform="translate(360,20)">
+    <rect width="280" height="130"/>
+    <text x="14" y="22" class="hdr">comments</text>
+    <text x="14" y="46">id            serial PK</text>
+    <text x="14" y="64">target_type   varchar(8) NOT NULL</text>
+    <text x="14" y="82">target_id     integer NOT NULL</text>
+    <text x="14" y="100">body          text NOT NULL</text>
+    <text x="14" y="118">created_at    timestamptz NOT NULL</text>
+    <text x="14" y="122" class="lbl"></text>
+  </g>
+  <text x="500" y="168" text-anchor="middle" class="lbl">idx: (target_type, target_id, created_at)</text>
+  <g transform="translate(680,50)">
+    <rect width="190" height="70" style="stroke-dasharray:4 3"/>
+    <text x="95" y="24" text-anchor="middle" class="hdr">TVMaze (external)</text>
+    <text x="95" y="44" text-anchor="middle">shows.id</text>
+    <text x="95" y="60" text-anchor="middle">episodes.id</text>
+  </g>
+  <line x1="320" y1="84" x2="680" y2="90"/>
+  <line x1="640" y1="84" x2="680" y2="90"/>
+  <text x="450" y="205" text-anchor="middle" class="lbl">No FK to TVMaze: IDs are opaque references validated at write time by TrackingService</text>
+</svg>
+<figcaption>Two tables. Everything else is fetched from TVMaze on demand.</figcaption>
+</figure>
+
+<pre><code>-- db/init.sql (applied by init_db() on startup via SQLAlchemy metadata.create_all)
+CREATE TABLE watched_episodes (
+    id          SERIAL PRIMARY KEY,
+    show_id     INTEGER     NOT NULL,
+    episode_id  INTEGER     NOT NULL UNIQUE,
+    watched_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX ix_watched_show ON watched_episodes (show_id);
+
+CREATE TABLE comments (
+    id           SERIAL PRIMARY KEY,
+    target_type  VARCHAR(8)  NOT NULL CHECK (target_type IN ('show','episode')),
+    target_id    INTEGER     NOT NULL,
+    body         TEXT        NOT NULL CHECK (length(body) BETWEEN 1 AND 2000),
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX ix_comments_target ON comments (target_type, target_id, created_at);</code></pre>
+
+<h3>Decisions</h3>
+<table>
+<thead><tr><th>Choice</th><th>Alternative</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Single-user, no <code>user_id</code></td><td>Users table + auth</td><td>Explicit non-goal in the challenge. Adding <code>user_id</code> later is a column + index, not a redesign</td></tr>
+<tr><td>Polymorphic <code>comments</code> (target_type + id)</td><td>Two tables</td><td>One repository, one route family, one UI component. CHECK keeps it honest</td></tr>
+<tr><td>No catalogue cache table</td><td>Mirror shows/episodes</td><td>Keeps DB tiny and always fresh. TVMaze rate limits are generous for interactive use; an in-process TTL cache in the client covers repeats</td></tr>
+<tr><td><code>create_all</code> on startup</td><td>Alembic</td><td>Two tables, greenfield. Alembic is listed as the upgrade path in README</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="security">8. Security</h2>
+<div class="grid2">
+  <div class="card green"><b>Input validation at the edge</b>Pydantic on every body and query. <code>q</code> 1..100 chars; comment body 1..2000; IDs are positive ints via path types. Domain re-checks invariants it cares about (empty body) so services are safe without HTTP.</div>
+  <div class="card green"><b>Secrets never reach the browser</b><code>HF_API_TOKEN</code> lives only in the backend container env. The frontend talks to <code>/api</code>; the backend talks to HuggingFace and TVMaze. Vite has no <code>VITE_*</code> secret.</div>
+  <div class="card warn"><b>Upstream failures are contained</b>httpx timeouts (5s TVMaze, 8s HF). TVMaze errors map to 502 with a generic message; stack traces are logged, not returned. AI errors map to fallback, never 5xx.</div>
+  <div class="card warn"><b>Untrusted text is data</b>TVMaze summaries are HTML: stripped server-side. Comments are rendered as text nodes in React, never <code>dangerouslySetInnerHTML</code>. Comments enter prompts inside delimiters.</div>
+</div>
+<p>CORS is enabled only for the Vite dev origin (<code>localhost:5173</code>) and only in <code>APP_ENV=dev</code>. In compose the SPA and API share one origin so no CORS is needed. SQL goes through SQLAlchemy parameters; no string SQL anywhere.</p>
+
+<hr>
+
+<h2 id="testing">9. Testing Strategy</h2>
+
+<pre><code>tests/
+  fakes.py                        # InMemoryWatchedRepository, InMemoryCommentRepository,
+                                  # StubCatalog(shows, episodes), StubProvider(text | raises)
+  unit/
+    domain/test_progress.py       # group_by_season, completion edge cases, hypothesis props
+    domain/test_models.py         # immutability, CommentTarget parsing
+    services/test_show_service.py
+    services/test_tracking_service.py
+    services/test_comment_service.py
+    services/test_insight_service.py
+    ai/test_template_provider.py  # deterministic output
+    ai/test_resilient_provider.py # timeout, exception, empty -> fallback
+    infra/test_tvmaze_mapping.py  # raw fixture JSON -> domain, HTML stripping
+  integration/
+    conftest.py                   # app with real Postgres (DATABASE_URL from compose) + StubCatalog
+    test_shows_api.py
+    test_tracking_api.py          # PUT twice is idempotent; unknown episode -> 404
+    test_comments_api.py
+    test_insights_api.py          # provider raises -> 200 with source=fallback</code></pre>
+
+<table>
+<thead><tr><th>Layer</th><th>What we assert</th><th>How</th></tr></thead>
+<tbody>
+<tr><td><b>Domain</b></td><td><code>completion</code> is 0 for empty season, 1.0 when all watched, ignores watched IDs from other seasons</td><td>pytest + hypothesis (property: 0 &le; completion &le; 1 for any inputs)</td></tr>
+<tr><td><b>Services</b></td><td><code>set_watched</code> rejects an episode not in the show; toggling twice is a no-op; comment body trimmed and non-empty</td><td>Fakes from <code>tests/fakes.py</code>, no mocks, no DB</td></tr>
+<tr><td><b>AI</b></td><td>Resilient provider returns fallback on timeout/exception/empty; template provider is deterministic; prompt contains delimiters</td><td>Stub provider that sleeps or raises</td></tr>
+<tr><td><b>Mapping</b></td><td>TVMaze JSON fixture maps to <code>Series</code>/<code>Episode</code>, HTML stripped, missing image tolerated</td><td>Recorded fixture files under <code>tests/fixtures/tvmaze/</code></td></tr>
+<tr><td><b>API</b></td><td>Status codes, schema shape, idempotency, 404/422/502 mapping</td><td>httpx <code>AsyncClient(app=...)</code>, DI overrides for catalog and provider, real Postgres</td></tr>
+</tbody>
+</table>
+<p>Kinhin discipline: each task in the plan names its test file first. Unit suite runs in under 2s with no network. Integration suite runs inside <code>make test</code> against the compose Postgres. TVMaze is never called in tests.</p>
+
+<hr>
+
+<h2 id="docker">10. Docker &amp; Infrastructure</h2>
+
+<pre><code># docker-compose.yml
+version: "3.3"
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: seven2u
+      POSTGRES_USER: seven2u
+      POSTGRES_PASSWORD: seven2u
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seven2u"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  app:
+    build: .
+    ports: ["7777:7777"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://seven2u:seven2u@db:5432/seven2u
+      HF_API_TOKEN: ${HF_API_TOKEN:-}
+      HF_MODEL: ${HF_MODEL:-mistralai/Mistral-7B-Instruct-v0.3}
+    depends_on:
+      db: {condition: service_healthy}
+volumes:
+  pgdata:</code></pre>
+
+<pre><code># Dockerfile (multi-stage)
+FROM node:22-alpine AS web
+WORKDIR /web
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ .
+RUN npm run build                      # -> /web/dist
+
+FROM python:3.13-slim
+WORKDIR /srv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+COPY backend/pyproject.toml backend/uv.lock ./
+RUN uv sync --frozen --no-dev
+COPY backend/app ./app
+COPY --from=web /web/dist ./static
+EXPOSE 7777
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7777"]</code></pre>
+
+<table>
+<thead><tr><th>Concern</th><th>Mechanism</th></tr></thead>
+<tbody>
+<tr><td>Single command</td><td><code>docker compose up --build</code>. Compose waits for the DB healthcheck, then starts app; <code>lifespan</code> runs <code>init_db()</code> (create_all)</td></tr>
+<tr><td>Port</td><td>App exposes 7777. DB is not published to the host</td></tr>
+<tr><td>Static serving</td><td>FastAPI mounts <code>./static</code> at <code>/</code> with an SPA fallback to <code>index.html</code>; API under <code>/api</code></td></tr>
+<tr><td>Persistence</td><td>Named volume <code>pgdata</code> survives restarts. <code>docker compose down -v</code> resets</td></tr>
+<tr><td>Dev loop</td><td><code>make dev</code>: compose db only + <code>uvicorn --reload</code> + <code>vite</code> with proxy <code>/api -&gt; 7777</code></td></tr>
+<tr><td>Config</td><td><code>Settings(BaseSettings)</code> in <code>config.py</code>; <code>.env.example</code> committed, <code>.env</code> ignored</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="sequencing">11. Implementation Sequencing</h2>
+<div class="phase-strip">
+  <div class="phase-step"><span class="num">A</span><span class="lbl">Setup</span></div>
+  <div class="phase-step"><span class="num">B</span><span class="lbl">Domain +<br>services</span></div>
+  <div class="phase-step"><span class="num">C</span><span class="lbl">API</span></div>
+  <div class="phase-step"><span class="num">D</span><span class="lbl">Frontend</span></div>
+  <div class="phase-step"><span class="num">E</span><span class="lbl">AI</span></div>
+  <div class="phase-step"><span class="num">F</span><span class="lbl">Docker</span></div>
+  <div class="phase-step"><span class="num">G</span><span class="lbl">Tests +<br>README</span></div>
+</div>
+<div class="grid2">
+  <div class="card accent"><b>Phase 1: Vertical slice (A, B, C)</b>Domain models, Protocols, fakes, TVMaze client, tracking + comment services, routes. Backend fully usable via curl with tests green.</div>
+  <div class="card"><b>Phase 2: Frontend (D)</b>Search, detail, seasons, watched toggle, comments. Runs against the backend from phase 1 via Vite proxy.</div>
+  <div class="card accent"><b>Phase 3: AI (E)</b>Protocol, template provider, resilient wrapper, HuggingFace adapter, insight routes + card. Fallback tested before the real provider exists.</div>
+  <div class="card green"><b>Phase 4: Ship (F, G)</b>Multi-stage Dockerfile, compose, static mount, integration tests against compose Postgres, README with trade-offs.</div>
+</div>
+<p>Full task breakdown with IDs, dependencies and hours lives in the implementation plan.</p>
+
+<footer>Seven2U Design Spec v1.0 &middot; beecrowd Software Architect challenge</footer>
+</body>
+</html>

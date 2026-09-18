@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven2U: Design Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1726; --surface:#152036; --surface2:#1b2843;
+  --border:rgba(255,255,255,.09); --text:#e8ecf4; --dim:#8fa0bd;
+  --gold:#d4a73a; --gold-dim:rgba(212,167,58,.14);
+  --green:#4cc38a; --green-dim:rgba(76,195,138,.13);
+  --led-green:#3fe08c; --led-blue:#58a6ff;
+  --amber:#d97706; --amber-dim:rgba(217,119,6,.14);
+  --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;min-width:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+.deck{height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth}
+.slide{height:100dvh;scroll-snap-align:start;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(40px,6vh,80px) clamp(40px,8vw,120px)}
+.slide:nth-child(odd){background-image:radial-gradient(ellipse 70% 55% at 22% 82%, var(--gold-dim), transparent)}
+.slide:nth-child(even){background-image:radial-gradient(ellipse 70% 55% at 78% 18%, var(--green-dim), transparent)}
+.slide{opacity:0;transform:translateY(40px) scale(.98);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+.slide.visible{opacity:1;transform:none}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1)}
+.slide.visible .reveal{opacity:1;transform:none}
+.slide.visible .reveal:nth-child(1){transition-delay:.1s}
+.slide.visible .reveal:nth-child(2){transition-delay:.2s}
+.slide.visible .reveal:nth-child(3){transition-delay:.3s}
+.slide.visible .reveal:nth-child(4){transition-delay:.4s}
+.slide.visible .reveal:nth-child(5){transition-delay:.5s}
+@media(prefers-reduced-motion:reduce){.slide,.reveal{opacity:1!important;transform:none!important;transition:none!important}}
+.slide__display{font-size:clamp(48px,10vw,110px);font-weight:800;letter-spacing:-3px;line-height:.95;text-wrap:balance}
+.slide__heading{font-size:clamp(28px,5vw,46px);font-weight:700;letter-spacing:-1px;line-height:1.1;text-wrap:balance}
+.slide__subtitle{font-size:clamp(18px,2.4vw,26px);color:var(--dim);line-height:1.45;text-wrap:balance}
+.hl{color:var(--gold);font-weight:700}
+em{font-style:italic;font-weight:700;color:var(--gold)}
+.slide--title{align-items:center;text-align:center}
+.slide--title .slide__subtitle{margin-top:24px}
+.slide--divider .bignum{position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);font-size:clamp(120px,24vw,280px);font-weight:200;opacity:.07;pointer-events:none}
+.period{font-family:var(--mono);font-size:clamp(13px,1.6vw,18px);font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.period.lw{color:var(--led-blue)}
+.period.tw{color:var(--led-green)}
+.gates{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,40px);margin-top:clamp(28px,5vh,52px)}
+.gate{border:1px solid var(--border);border-radius:18px;padding:clamp(28px,5vh,52px) clamp(28px,3vw,48px);background:linear-gradient(135deg,var(--gold-dim),var(--surface))}
+.gate.green-g{border-color:var(--green);background:linear-gradient(135deg,var(--green-dim),var(--surface))}
+.gate .k{font-family:var(--mono);font-size:clamp(11px,1.4vw,15px);letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.gate .v{font-size:clamp(36px,5vw,64px);font-weight:800;letter-spacing:-2px;margin-top:10px;color:var(--gold);line-height:1}
+.gate.green-g .v{color:var(--green)}
+.gate .note{font-size:clamp(15px,1.9vw,20px);color:var(--dim);margin-top:14px}
+.strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(12px,2vw,24px);margin-top:clamp(20px,4vh,40px)}
+.scard{border:1px solid var(--border);border-radius:14px;padding:clamp(16px,2.8vh,28px) clamp(16px,2vw,24px);background:var(--surface)}
+.scard .stag{font-family:var(--mono);font-size:clamp(10px,1.1vw,12px);letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.scard .stag.green{color:var(--green)}
+.scard .stag.amber{color:var(--amber)}
+.scard b{display:block;font-size:clamp(16px,2vw,22px);font-weight:700;margin-bottom:6px}
+.scard p{font-size:clamp(13px,1.5vw,17px);color:var(--dim);line-height:1.4}
+.phase-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(4px,0.6vw,8px);margin-top:clamp(20px,4vh,40px)}
+.phase-step{text-align:center;padding:clamp(10px,2vh,20px) 6px;border-radius:12px;border:1px solid var(--border);background:var(--surface)}
+.phase-step .num{font-family:var(--mono);font-size:clamp(24px,3.5vw,40px);font-weight:700;color:var(--gold);display:block;margin-bottom:4px}
+.phase-step .lbl{color:var(--dim);font-size:clamp(10px,1.2vw,14px);line-height:1.3}
+.phase-step .timing{font-family:var(--mono);font-size:clamp(10px,1.1vw,13px);margin-top:4px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:clamp(20px,3.5vh,36px)}
+th{font-family:var(--mono);font-size:clamp(10px,1.2vw,13px);letter-spacing:2px;text-transform:uppercase;color:var(--dim);text-align:left;padding:clamp(10px,1.8vh,16px) clamp(14px,1.8vw,22px);border-bottom:1px solid var(--border);background:var(--surface2)}
+td{font-size:clamp(13px,1.6vw,17px);padding:clamp(8px,1.4vh,14px) clamp(14px,1.8vw,22px);border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+code{font-family:var(--mono);font-size:clamp(12px,1.4vw,16px);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 6px}
+pre{font-family:var(--mono);font-size:clamp(12px,1.4vw,16px);line-height:1.5;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:clamp(14px,2.4vh,24px) clamp(16px,2vw,28px);margin-top:clamp(20px,3.5vh,36px);overflow-x:auto}
+.layers{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1vw,14px);margin-top:clamp(24px,4vh,44px);align-items:stretch}
+.layer{border:1px solid var(--border);border-radius:14px;padding:clamp(14px,2.4vh,24px) clamp(12px,1.6vw,20px);background:var(--surface);text-align:center}
+.layer .n{font-family:var(--mono);font-size:clamp(14px,1.8vw,20px);font-weight:700;color:var(--gold)}
+.layer .d{font-size:clamp(12px,1.4vw,15px);color:var(--dim);margin-top:6px;line-height:1.35}
+.domain{grid-column:1 / -1;border-color:var(--gold);background:linear-gradient(135deg,var(--gold-dim),var(--surface))}
+.arrowrow{display:flex;justify-content:space-around;color:var(--gold);font-size:clamp(20px,3vw,32px);margin-top:6px}
+.tree{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,32px);margin-top:clamp(24px,4vh,44px)}
+.deck-progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);z-index:100;transition:width .3s ease;pointer-events:none}
+.deck-dots{position:fixed;right:clamp(12px,2vw,24px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:100}
+.deck-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);opacity:.3;border:none;padding:0;cursor:pointer;transition:opacity .2s,transform .2s}
+.deck-dot.active{opacity:1;background:var(--gold);transform:scale(1.4)}
+.deck-hint{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);opacity:.6}
+</style>
+</head>
+<body>
+<div class="deck-progress" id="progress"></div>
+<div class="deck-dots" id="dots"></div>
+<div class="deck-hint">scroll or arrow keys</div>
+
+<div class="deck" id="deck">
+
+<section class="slide slide--title">
+  <div class="reveal slide__label period lw">Design deck</div>
+  <h1 class="reveal slide__display">Seven2U</h1>
+  <p class="reveal slide__subtitle">Never lose where you stopped. <em>Know what to expect</em> before watching.</p>
+</section>
+
+<section class="slide">
+  <div class="reveal period lw">The problem</div>
+  <h2 class="reveal slide__heading">Five series in rotation. <em>Which episode was I on?</em> Was that one worth it? Is the next one?</h2>
+  <p class="reveal slide__subtitle">Trackers remember checkboxes. Ratings sites remember opinions. Nobody tells you what an episode <em>is</em> before you press play.</p>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">The move</div>
+  <h2 class="reveal slide__heading">Search. Track. <span class="hl">Insight.</span> One surface.</h2>
+  <div class="reveal strip">
+    <div class="scard"><div class="stag">search</div><b>TVMaze, live</b><p>Debounced search, poster grid, detail with episodes by season. Catalogue is never mirrored.</p></div>
+    <div class="scard"><div class="stag green">track</div><b>Watched + comments</b><p>Persisted in Postgres. Optimistic toggle, progress per season, notes on series or episode.</p></div>
+    <div class="scard"><div class="stag amber">insight</div><b>Spoiler-free AI preview</b><p>Tone, themes, who will like it. Personalised by your comments. Falls back gracefully.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">Architecture</div>
+  <h2 class="reveal slide__heading">Clean Architecture. Dependencies point <em>inward</em>.</h2>
+  <div class="reveal layers">
+    <div class="layer"><div class="n">api</div><div class="d">routes, Pydantic schemas, error mapping, DI wiring</div></div>
+    <div class="layer"><div class="n">services</div><div class="d">use cases; receive Protocols via constructor</div></div>
+    <div class="layer"><div class="n">repositories</div><div class="d">Protocols only: ShowCatalog, Watched, Comment</div></div>
+    <div class="layer"><div class="n">infrastructure</div><div class="d">SQLAlchemy, httpx TVMaze client, AI providers</div></div>
+    <div class="layer domain"><div class="n">domain</div><div class="d">Series, Episode, Comment, WatchedEpisode, progress rules. Frozen dataclasses. Imports nothing.</div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">API</div>
+  <h2 class="reveal slide__heading">Nine endpoints under <code>/api</code>. Same origin as the SPA.</h2>
+  <table class="reveal">
+    <thead><tr><th>Endpoint</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /shows/search?q=</code></td><td>TVMaze search mapped to domain</td></tr>
+      <tr><td><code>GET /shows/{id}/episodes</code></td><td>Seasons with watched flags and completion ratio</td></tr>
+      <tr><td><code>PUT /shows/{id}/episodes/{ep}/watched</code></td><td>Idempotent. Validates episode belongs to show</td></tr>
+      <tr><td><code>GET|POST /comments/{show|episode}/{id}</code></td><td>Polymorphic comments, 1..2000 chars</td></tr>
+      <tr><td><code>GET /insights/shows/{id}[/episodes/{ep}]</code></td><td>Always 200. <code>source: llm | fallback</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">AI</div>
+  <h2 class="reveal slide__heading">One Protocol. Two providers. The page <em>never</em> breaks.</h2>
+  <div class="reveal gates">
+    <div class="gate"><div class="k">Primary</div><div class="v">HuggingFace</div><div class="note">Chat-completions on an instruct model. Spoiler-free prompt, summary and comments passed as delimited data. Token lives in the backend env only.</div></div>
+    <div class="gate green-g"><div class="k">Fallback</div><div class="v">Template</div><div class="note">Genre-driven tone + summary excerpt. Used on 8s timeout, any exception, empty text, or no token. Same schema, labelled <code>fallback</code>.</div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">Frontend</div>
+  <h2 class="reveal slide__heading">Feature folders, <span class="hl">use&lt;Feature&gt;</span> hooks, presentational components.</h2>
+  <div class="reveal tree">
+<pre>SearchPage
++-- SearchBar        300ms debounce
++-- SeriesCard[]     poster, year, genres
++-- EmptyState
+
+hooks
+useSearch          AbortController
+useSeriesDetail    parallel fetch
+useEpisodeTracking optimistic + rollback
+useComments
+useInsight         lazy + cached</pre>
+<pre>SeriesPage
++-- SeriesHero
++-- InsightCard      violet border
++-- Comments         target=show
++-- SeasonAccordion[]
+    +-- ProgressBar
+    +-- EpisodeRow[]
+        +-- Eye toggle
+        +-- InsightCard
+        +-- Comments  target=episode</pre>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">Data</div>
+  <h2 class="reveal slide__heading">Two tables. Own <em>only</em> what the user creates.</h2>
+  <div class="reveal gates">
+    <div class="gate"><div class="k">watched_episodes</div><div class="v" style="font-size:clamp(22px,3vw,36px)">episode_id UNIQUE</div><div class="note"><code>show_id</code>, <code>watched_at</code>. Upsert on toggle. Index on show_id.</div></div>
+    <div class="gate green-g"><div class="k">comments</div><div class="v" style="font-size:clamp(22px,3vw,36px)">target_type + target_id</div><div class="note"><code>show | episode</code> via CHECK. Body 1..2000. Index on (type, id, created_at).</div></div>
+  </div>
+  <p class="reveal slide__subtitle" style="margin-top:28px">No FK to TVMaze. IDs are opaque references, validated at write time by the service. Auth later means one <code>user_id</code> column, not a redesign.</p>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">Docker</div>
+  <h2 class="reveal slide__heading"><code>docker compose up --build</code>. Port <span class="hl">7777</span>. Done.</h2>
+  <div class="reveal strip">
+    <div class="scard"><div class="stag">stage 1</div><b>node:22-alpine</b><p><code>npm ci &amp;&amp; npm run build</code>. Emits <code>dist/</code>.</p></div>
+    <div class="scard"><div class="stag">stage 2</div><b>python:3.13-slim + uv</b><p>Installs locked deps, copies <code>dist/</code> to <code>static/</code>, serves API + SPA from one uvicorn.</p></div>
+    <div class="scard"><div class="stag green">db</div><b>postgres:16-alpine</b><p>Healthcheck gates app start. Named volume. Not published to host.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">Testing</div>
+  <h2 class="reveal slide__heading">Fakes over mocks. Domain and services run with <em>zero I/O</em>.</h2>
+  <table class="reveal">
+    <thead><tr><th>Layer</th><th>Asserts</th><th>Tool</th></tr></thead>
+    <tbody>
+      <tr><td>Domain</td><td>Completion in [0,1], foreign IDs ignored, specials as season 0</td><td>pytest + hypothesis</td></tr>
+      <tr><td>Services</td><td>Episode must belong to show; toggle idempotent; empty comment rejected</td><td>In-memory fakes</td></tr>
+      <tr><td>AI</td><td>Timeout, exception, empty text all yield fallback; template deterministic</td><td>Stub provider, MockTransport</td></tr>
+      <tr><td>API</td><td>Status codes, schemas, 200-on-AI-failure</td><td>httpx AsyncClient + compose Postgres</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="slide">
+  <div class="reveal period tw">Plan</div>
+  <h2 class="reveal slide__heading"><span class="hl">40 tasks</span>, 7 workstreams, <span class="hl">51h</span>. Solo: 7 days.</h2>
+  <div class="reveal phase-strip">
+    <div class="phase-step"><span class="num">A</span><span class="lbl">Setup</span><div class="timing">4h</div></div>
+    <div class="phase-step"><span class="num">B</span><span class="lbl">Domain</span><div class="timing">10h</div></div>
+    <div class="phase-step"><span class="num">C</span><span class="lbl">API</span><div class="timing">6h</div></div>
+    <div class="phase-step"><span class="num">D</span><span class="lbl">Frontend</span><div class="timing">14h</div></div>
+    <div class="phase-step"><span class="num">E</span><span class="lbl">AI</span><div class="timing">6h</div></div>
+    <div class="phase-step"><span class="num">F</span><span class="lbl">Docker</span><div class="timing">4h</div></div>
+    <div class="phase-step"><span class="num">G</span><span class="lbl">Tests</span><div class="timing">7h</div></div>
+  </div>
+  <p class="reveal slide__subtitle" style="margin-top:28px">Critical path ~24h: setup, domain, tracking service, routes, detail page, toggle, build, compose, smoke, README. Every task starts with its test file.</p>
+</section>
+
+<section class="slide slide--title">
+  <div class="reveal period lw">Trade-offs</div>
+  <h2 class="reveal slide__heading">No catalogue mirror. No auth. No agent framework. No Alembic. <em>Each one is a named next step, not an oversight.</em></h2>
+  <p class="reveal slide__subtitle">Architecture that a second engineer can extend in an afternoon.</p>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck');
+  var slides=Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var dots=document.getElementById('dots');
+  var progress=document.getElementById('progress');
+  slides.forEach(function(s,i){
+    var b=document.createElement('button');b.className='deck-dot';b.setAttribute('aria-label','Slide '+(i+1));
+    b.addEventListener('click',function(){s.scrollIntoView({behavior:'smooth'})});
+    dots.appendChild(b);
+  });
+  var dotEls=dots.querySelectorAll('.deck-dot');
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        var i=slides.indexOf(e.target);
+        dotEls.forEach(function(d,j){d.classList.toggle('active',j===i)});
+        progress.style.width=((i+1)/slides.length*100)+'%';
+      }
+    });
+  },{root:deck,threshold:.6});
+  slides.forEach(function(s){io.observe(s)});
+  document.addEventListener('keydown',function(e){
+    var cur=slides.findIndex(function(s){return s.classList.contains('visible')&&Math.abs(s.getBoundingClientRect().top)<10});
+    if(cur<0)cur=0;
+    if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();(slides[cur+1]||slides[cur]).scrollIntoView({behavior:'smooth'})}
+    if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();(slides[cur-1]||slides[cur]).scrollIntoView({behavior:'smooth'})}
+  });
+})();
+</script>
+</body>
+</html>

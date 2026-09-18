@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven2U Implementation Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f7f4ee; --surface:#ffffff; --surface2:#f0ece2;
+  --border:rgba(30,58,95,.14); --text:#1b2438; --dim:#5d6b85;
+  --gold:#a97e14; --gold-dim:rgba(169,126,20,.12);
+  --green:#0e7a4e; --green-dim:rgba(14,122,78,.10);
+  --red:#b3261e; --amber:#9a5b04; --amber-dim:rgba(154,91,4,.12);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --fig-ink:currentColor; --fig-accent:#a97e14; --fig-muted:rgba(30,58,95,.35);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1726; --surface:#152036; --surface2:#1b2843;
+    --border:rgba(255,255,255,.09); --text:#e8ecf4; --dim:#8fa0bd;
+    --gold:#d4a73a; --gold-dim:rgba(212,167,58,.14);
+    --green:#4cc38a; --green-dim:rgba(76,195,138,.13);
+    --red:#e5534b; --amber:#d9a441; --amber-dim:rgba(217,119,6,.14);
+    --fig-accent:#d4a73a; --fig-muted:rgba(255,255,255,.25);
+  }
+}
+*{box-sizing:border-box;margin:0;min-width:0}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 80% 40% at 50% -10%,var(--gold-dim),transparent);
+  color:var(--text);font-family:var(--sans);font-size:14.5px;line-height:1.6;
+  max-width:1060px;margin:0 auto;padding:48px 32px 80px;
+}
+h1{font-size:32px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
+h2{font-size:18px;font-weight:600;margin:52px 0 10px}
+h3{font-size:14.5px;font-weight:600;margin:28px 0 8px}
+h2:first-of-type{margin-top:32px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:600}
+.sub{color:var(--dim);font-size:13px;margin-bottom:8px;max-width:70ch}
+.version{font-size:12px;color:var(--dim);margin-bottom:24px}
+p{margin:8px 0;max-width:72ch}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+pre{font-family:var(--mono);font-size:12px;line-height:1.5;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;overflow-x:auto;margin:12px 0}
+pre code{background:none;border:none;padding:0}
+.card{border:1px solid var(--border);border-radius:10px;padding:20px 24px;background:var(--surface);margin:14px 0}
+.card b{display:block;margin-bottom:6px;font-weight:600}
+.card.accent{border-color:var(--gold);background:linear-gradient(135deg,var(--gold-dim),var(--surface))}
+.card.warn{border-color:var(--amber);background:linear-gradient(135deg,var(--amber-dim),var(--surface))}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0;font-size:13px}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{font-size:11.5px}
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:99px;font-weight:600;background:var(--gold-dim);color:var(--gold)}
+.ws-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:16px 0}
+.ws-step{text-align:center;padding:10px 6px;border-radius:8px;font-size:11px;border:1px solid var(--border);background:var(--surface)}
+.ws-step .num{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold);display:block;margin-bottom:4px}
+.ws-step .lbl{color:var(--dim);font-size:10px;line-height:1.3}
+@media(max-width:720px){.ws-strip{grid-template-columns:repeat(4,1fr)}}
+svg.fig{width:100%;height:auto;margin:20px 0;display:block}
+figcaption{font-style:italic;font-size:12px;color:var(--dim);margin:-12px 0 16px;text-align:center}
+hr{border:none;border-top:1px solid var(--border);margin:40px 0}
+footer{margin-top:48px;color:var(--dim);font-size:11.5px;border-top:1px solid var(--border);padding-top:14px}
+.wave{border:1px solid var(--border);border-radius:10px;padding:20px 24px;background:var(--surface);margin:14px 0}
+.wave-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.wave-num{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--gold)}
+.wave-title{font-weight:600;font-size:15px}
+.wave-days{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto;letter-spacing:.1em;text-transform:uppercase}
+.checklist{list-style:none;padding:0;margin:14px 0}
+.checklist li{padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;align-items:center;gap:8px}
+.checklist li:last-child{border-bottom:none}
+.check{width:16px;height:16px;border:2px solid var(--green);border-radius:4px;flex-shrink:0}
+.ngoal{border-left:3px solid var(--amber);padding-left:14px;margin:8px 0;font-size:13px;color:var(--dim)}
+@media(prefers-reduced-motion:no-preference){
+  .card,.wave,table{animation:up .5s ease both}
+  @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Implementation Plan v1.0</div>
+  <h1>Seven2U</h1>
+  <p class="sub">40 tasks across 7 workstreams. 51 hours total. Critical path ~24h. Solo developer: 7 working days at a sustainable pace, 5 if pushed. Every task names the test it starts with.</p>
+  <div class="version">beecrowd Software Architect challenge &middot; companion to the design spec</div>
+</header>
+
+<h2>Workstreams</h2>
+<div class="ws-strip">
+  <div class="ws-step"><span class="num">A</span><span class="lbl">Setup<br>4h &middot; 4 tasks</span></div>
+  <div class="ws-step"><span class="num">B</span><span class="lbl">Domain + services<br>10h &middot; 7 tasks</span></div>
+  <div class="ws-step"><span class="num">C</span><span class="lbl">API<br>6h &middot; 5 tasks</span></div>
+  <div class="ws-step"><span class="num">D</span><span class="lbl">Frontend<br>14h &middot; 9 tasks</span></div>
+  <div class="ws-step"><span class="num">E</span><span class="lbl">AI<br>6h &middot; 5 tasks</span></div>
+  <div class="ws-step"><span class="num">F</span><span class="lbl">Docker<br>4h &middot; 3 tasks</span></div>
+  <div class="ws-step"><span class="num">G</span><span class="lbl">Tests + README<br>7h &middot; 7 tasks</span></div>
+</div>
+
+<h2>Dependency Graph</h2>
+<figure>
+<svg class="fig" viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--fig-ink)"/></marker></defs>
+  <style>
+    text{font-family:var(--mono,'monospace');font-size:11px;fill:var(--fig-ink)}
+    rect{fill:var(--surface);stroke:var(--fig-muted);stroke-width:1;rx:6}
+    line{stroke:var(--fig-muted);stroke-width:1;marker-end:url(#ah)}
+    .crit rect{stroke:var(--fig-accent);stroke-width:2}
+    .crit text{fill:var(--fig-accent);font-weight:700}
+  </style>
+  <g class="crit" transform="translate(20,20)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">A1 A2</text></g>
+  <g transform="translate(20,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">A3</text></g>
+  <g transform="translate(20,120)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">A4</text></g>
+
+  <g class="crit" transform="translate(140,20)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">B1 B2</text></g>
+  <line x1="100" y1="36" x2="140" y2="36"/>
+  <g transform="translate(140,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">B3 B4</text></g>
+  <line x1="220" y1="36" x2="260" y2="36"/>
+  <line x1="220" y1="36" x2="260" y2="86"/>
+  <g class="crit" transform="translate(260,20)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">B5 B6</text></g>
+  <g transform="translate(260,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">B7</text></g>
+  <line x1="220" y1="86" x2="260" y2="86"/>
+  <g transform="translate(260,120)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">E1 E2 E3</text></g>
+  <line x1="220" y1="52" x2="260" y2="136"/>
+
+  <g class="crit" transform="translate(380,20)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">C1 C2</text></g>
+  <line x1="340" y1="36" x2="380" y2="36"/>
+  <g class="crit" transform="translate(380,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">C3 C4 C5</text></g>
+  <line x1="460" y1="36" x2="460" y2="70"/>
+  <g transform="translate(380,120)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">E4 E5</text></g>
+  <line x1="340" y1="136" x2="380" y2="136"/>
+  <g transform="translate(380,170)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">G1 G2 G4</text></g>
+  <line x1="340" y1="52" x2="380" y2="186"/>
+
+  <g class="crit" transform="translate(500,20)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">D1 D2</text></g>
+  <line x1="460" y1="36" x2="500" y2="36"/>
+  <line x1="100" y1="86" x2="500" y2="40" style="stroke-dasharray:3 3"/>
+  <g class="crit" transform="translate(500,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">D3 D4 D5</text></g>
+  <line x1="540" y1="52" x2="540" y2="70"/>
+  <g transform="translate(500,120)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">D6 D7 D8</text></g>
+  <line x1="540" y1="102" x2="540" y2="120"/>
+  <g transform="translate(500,170)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">G3 G5</text></g>
+  <line x1="460" y1="86" x2="500" y2="186"/>
+
+  <g class="crit" transform="translate(620,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">D9</text></g>
+  <line x1="580" y1="86" x2="620" y2="86"/>
+  <line x1="580" y1="136" x2="620" y2="92"/>
+  <g class="crit" transform="translate(740,70)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">F1 F2 F3</text></g>
+  <line x1="700" y1="86" x2="740" y2="86"/>
+  <g transform="translate(740,120)"><rect width="80" height="32"/><text x="40" y="20" text-anchor="middle">G6</text></g>
+  <line x1="780" y1="102" x2="780" y2="120"/>
+  <g class="crit" transform="translate(740,170)"><rect width="80" height="32" style="stroke:var(--green)"/><text x="40" y="20" text-anchor="middle" style="fill:var(--green)">G7</text></g>
+  <line x1="780" y1="152" x2="780" y2="170"/>
+  <line x1="580" y1="186" x2="740" y2="186"/>
+
+  <text x="60" y="300" text-anchor="middle" style="font-size:10px;fill:var(--dim)">WAVE 0</text>
+  <text x="240" y="300" text-anchor="middle" style="font-size:10px;fill:var(--dim)">WAVE 1</text>
+  <text x="420" y="300" text-anchor="middle" style="font-size:10px;fill:var(--dim)">WAVE 2</text>
+  <text x="540" y="300" text-anchor="middle" style="font-size:10px;fill:var(--dim)">WAVE 3</text>
+  <text x="720" y="300" text-anchor="middle" style="font-size:10px;fill:var(--dim)">WAVE 4-5</text>
+</svg>
+<figcaption>Critical path highlighted. A solo developer walks the waves left to right; parallel boxes inside a wave are interleavable.</figcaption>
+</figure>
+
+<hr>
+
+<h2>WS-A: Project Setup <span class="tag">4h</span></h2>
+<p>Unblocks everything. No dependencies. Conventions locked here so every later task inherits them.</p>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>A1</code></td><td>Repo scaffold: <code>backend/</code> with uv + pyproject (ruff 80 cols, mypy strict, pytest, pytest-asyncio, hypothesis), <code>.gitignore</code>, <code>.env.example</code>, Makefile targets <code>dev / test / lint / up</code></td><td><code>backend/pyproject.toml</code>, <code>Makefile</code>, <code>.env.example</code></td><td>none</td><td>1h</td><td><code>uv sync</code> clean. <code>make lint</code> passes on empty package.</td></tr>
+<tr><td><code>A2</code></td><td>FastAPI skeleton: <code>create_app()</code>, <code>Settings</code> via pydantic-settings, <code>/api/health</code>, lifespan hook</td><td><code>app/main.py</code>, <code>app/config.py</code>, <code>app/api/routes/health.py</code>, <code>tests/integration/test_health.py</code></td><td>A1</td><td>1h</td><td>Health returns 200 with <code>{status:"ok"}</code> under httpx AsyncClient.</td></tr>
+<tr><td><code>A3</code></td><td>Frontend scaffold: Vite + React + TS + Tailwind + lucide-react; design tokens from design-system.md as Tailwind theme; Vite proxy <code>/api -&gt; :7777</code></td><td><code>frontend/</code>, <code>tailwind.config.ts</code>, <code>vite.config.ts</code></td><td>none</td><td>1h</td><td><code>npm run dev</code> shows TopBar with logo in dark palette. <code>npm run build</code> emits <code>dist/</code>.</td></tr>
+<tr><td><code>A4</code></td><td>README skeleton: sections for run, architecture, trade-offs, AI, tests (filled by G7)</td><td><code>README.md</code></td><td>none</td><td>1h</td><td>Headings present; run command copy-pasteable once F2 lands.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>WS-B: Backend Domain + Services <span class="tag">10h</span></h2>
+<h3>Domain (no framework imports)</h3>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>B1</code></td><td>Domain models as frozen dataclasses + errors</td><td><code>app/domain/models.py</code>, <code>app/domain/errors.py</code>, <code>tests/unit/domain/test_models.py</code></td><td>A1</td><td>1.5h</td><td>Test: models are immutable, <code>CommentTarget("show")</code> parses, errors subclass a common <code>DomainError</code>.</td></tr>
+<tr><td><code>B2</code></td><td>Season grouping + completion rule</td><td><code>app/domain/progress.py</code>, <code>tests/unit/domain/test_progress.py</code></td><td>B1</td><td>1.5h</td><td>Tests: empty season = 0.0; all watched = 1.0; foreign watched IDs ignored; hypothesis property 0&le;c&le;1; seasons sorted ascending.</td></tr>
+<tr><td><code>B3</code></td><td>Repository Protocols + in-memory fakes</td><td><code>app/repositories/protocols.py</code>, <code>tests/fakes.py</code></td><td>B1</td><td>1h</td><td>mypy accepts fakes where Protocols are expected. Fakes have a <code>seed()</code> helper.</td></tr>
+</tbody>
+</table>
+<h3>Infrastructure + services</h3>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>B4</code></td><td>TVMaze client: httpx AsyncClient, 5s timeout, mapping raw JSON to domain, HTML stripping, 404 to <code>NotFoundError</code>, 5xx/timeout to <code>UpstreamError</code>, 60s in-process TTL cache</td><td><code>app/infrastructure/tvmaze/client.py</code>, <code>mapping.py</code>, <code>tests/unit/infra/test_tvmaze_mapping.py</code>, <code>tests/fixtures/tvmaze/*.json</code></td><td>B3</td><td>2.5h</td><td>Fixture for search/show/episodes maps correctly; missing image and null summary tolerated; <code>&lt;p&gt;</code> stripped.</td></tr>
+<tr><td><code>B5</code></td><td>ShowService + TrackingService</td><td><code>app/services/show_service.py</code>, <code>tracking_service.py</code>, <code>tests/unit/services/test_show_service.py</code>, <code>test_tracking_service.py</code></td><td>B2, B3</td><td>1.5h</td><td>Tests: empty query raises ValidationError; <code>set_watched</code> for episode outside show raises NotFoundError; set true twice is idempotent; <code>episodes_with_progress</code> returns seasons with correct completion.</td></tr>
+<tr><td><code>B6</code></td><td>CommentService</td><td><code>app/services/comment_service.py</code>, <code>tests/unit/services/test_comment_service.py</code></td><td>B3</td><td>1h</td><td>Tests: body trimmed; whitespace-only rejected; list ordered by created_at asc.</td></tr>
+<tr><td><code>B7</code></td><td>SQLAlchemy tables + async session + Sql repositories + <code>init_db()</code></td><td><code>app/infrastructure/db/session.py</code>, <code>tables.py</code>, <code>watched_repository.py</code>, <code>comment_repository.py</code></td><td>B3</td><td>1h</td><td>Upsert on <code>episode_id</code> UNIQUE; unmark is a no-op when absent. Verified by G3 against Postgres.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>WS-C: Backend API <span class="tag">6h</span></h2>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>C1</code></td><td>Pydantic schemas for shows, tracking, comments, insights</td><td><code>app/api/schemas/*.py</code></td><td>B1</td><td>1h</td><td>Schemas match spec &sect;4 field-for-field. <code>from_domain()</code> classmethods.</td></tr>
+<tr><td><code>C2</code></td><td>Dependency wiring: session per request, service factories, catalog singleton</td><td><code>app/api/deps.py</code></td><td>B5, B6, B7</td><td>1h</td><td>Services constructed only in <code>deps.py</code>. Overridable via <code>app.dependency_overrides</code>.</td></tr>
+<tr><td><code>C3</code></td><td>Shows routes: search + detail</td><td><code>app/api/routes/shows.py</code>, <code>tests/integration/test_shows_api.py</code></td><td>C1, C2</td><td>1h</td><td>Tests with StubCatalog: search returns list; unknown ID 404; <code>q</code> over 100 chars 422.</td></tr>
+<tr><td><code>C4</code></td><td>Tracking + comments routes</td><td><code>app/api/routes/tracking.py</code>, <code>comments.py</code>, <code>tests/integration/test_tracking_api.py</code>, <code>test_comments_api.py</code></td><td>C1, C2</td><td>1.5h</td><td>PUT watched twice = same response; GET episodes reflects state; POST comment 201; invalid target 422.</td></tr>
+<tr><td><code>C5</code></td><td>Error mapping middleware + CORS (dev only) + static SPA mount</td><td><code>app/api/errors.py</code>, <code>app/main.py</code></td><td>C3, C4</td><td>1.5h</td><td>NotFound 404, Validation 422, Upstream 502, unexpected 500 with generic body. <code>/</code> serves index.html when <code>static/</code> exists.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>WS-D: Frontend <span class="tag">14h</span></h2>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>D1</code></td><td>API client + types mirroring schemas; <code>ApiError</code> with status</td><td><code>src/lib/api.ts</code>, <code>src/lib/types.ts</code></td><td>A3, C1</td><td>1h</td><td>Typed functions for every endpoint. Non-2xx throws ApiError.</td></tr>
+<tr><td><code>D2</code></td><td>Layout: TopBar, router (<code>/</code>, <code>/shows/:id</code>), Toast, Skeleton, EmptyState</td><td><code>src/App.tsx</code>, <code>src/components/*.tsx</code></td><td>A3</td><td>1.5h</td><td>Navigation works; back arrow on detail; toast can be triggered.</td></tr>
+<tr><td><code>D3</code></td><td>Search feature: <code>useSearch</code> (300ms debounce, AbortController), SearchBar, SeriesCard grid</td><td><code>src/features/search/*</code></td><td>D1, D2</td><td>2.5h</td><td>Typing "breaking" shows cards; stale responses discarded; empty and no-results states render.</td></tr>
+<tr><td><code>D4</code></td><td>Series detail: <code>useSeriesDetail</code> (parallel fetch), SeriesHero, SeasonAccordion, ProgressBar</td><td><code>src/features/series/*</code></td><td>D1, D2</td><td>3h</td><td>Hero + seasons render; skeleton while loading; error card with retry on 502.</td></tr>
+<tr><td><code>D5</code></td><td>Episode tracking: <code>useEpisodeTracking</code> optimistic toggle with rollback, EpisodeRow with Eye/EyeOff, green flash</td><td><code>src/features/episode/*</code></td><td>D4</td><td>2h</td><td>Toggle updates row + season progress instantly; refresh persists; failed PUT rolls back + toast.</td></tr>
+<tr><td><code>D6</code></td><td>Comments: <code>useComments</code>, CommentList, CommentForm (series + episode targets)</td><td><code>src/features/comments/*</code></td><td>D4</td><td>2h</td><td>Post appends to list; empty submit disabled; count badge on EpisodeRow.</td></tr>
+<tr><td><code>D7</code></td><td>Insight: <code>useInsight</code> lazy load + cache, InsightCard with violet border, pulse skeleton, fallback note</td><td><code>src/features/insight/*</code></td><td>D4, E5</td><td>1.5h</td><td>Series and episode insight render; <code>source:"fallback"</code> shows muted note instead of AI badge.</td></tr>
+<tr><td><code>D8</code></td><td>Polish: responsive grid breakpoints, <code>prefers-reduced-motion</code>, focus rings, light mode tokens</td><td><code>src/index.css</code>, components</td><td>D3-D7</td><td>0.5h</td><td>Mobile single column; tablet 2; desktop 3-4. Keyboard reachable.</td></tr>
+<tr><td><code>D9</code></td><td>Production build wired: <code>npm run build</code> output consumed by C5 static mount</td><td><code>vite.config.ts</code> (base), <code>app/main.py</code></td><td>D8, C5</td><td>1h</td><td>Backend serves SPA at <code>/</code>; deep link <code>/shows/82</code> reloads correctly.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>WS-E: AI Integration <span class="tag">6h</span></h2>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>E1</code></td><td><code>InsightProvider</code> Protocol, <code>InsightRequest</code>, <code>Insight</code>, prompt builder with delimiters</td><td><code>app/infrastructure/ai/protocol.py</code>, <code>prompt.py</code>, <code>tests/unit/ai/test_prompt.py</code></td><td>B1</td><td>1h</td><td>Prompt contains title, genres, delimited summary and comments; word cap stated.</td></tr>
+<tr><td><code>E2</code></td><td><code>TemplateInsightProvider</code>: deterministic, genre-driven tone + summary excerpt + comment count</td><td><code>app/infrastructure/ai/template.py</code>, <code>tests/unit/ai/test_template_provider.py</code></td><td>E1</td><td>1h</td><td>Exact-string tests for 3 genre combos; empty summary handled.</td></tr>
+<tr><td><code>E3</code></td><td><code>ResilientInsightProvider</code>: timeout via <code>asyncio.wait_for</code>, exception and empty-text fallback, logging, <code>primary=None</code> mode</td><td><code>app/infrastructure/ai/resilient.py</code>, <code>tests/unit/ai/test_resilient_provider.py</code></td><td>E2</td><td>1.5h</td><td>Stub that sleeps 10s returns fallback within timeout; stub that raises returns fallback; provider name reported correctly.</td></tr>
+<tr><td><code>E4</code></td><td><code>HuggingFaceInsightProvider</code>: httpx to HF chat-completions, model from settings, 8s timeout, response parsing</td><td><code>app/infrastructure/ai/huggingface.py</code>, <code>tests/unit/ai/test_huggingface_provider.py</code></td><td>E1</td><td>1.5h</td><td>Mocked transport: 200 parses text; 503 raises; malformed JSON raises. Manual smoke with real token documented.</td></tr>
+<tr><td><code>E5</code></td><td><code>InsightService</code> + insight routes + provider selection in <code>deps.py</code> (token present = HF, else template)</td><td><code>app/services/insight_service.py</code>, <code>app/api/routes/insights.py</code>, <code>tests/unit/services/test_insight_service.py</code>, <code>tests/integration/test_insights_api.py</code></td><td>E3, E4, C2</td><td>1h</td><td>Service passes comments into request; API returns 200 with <code>source:"fallback"</code> when provider raises; health reports provider name.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>WS-F: Docker + Infra <span class="tag">4h</span></h2>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>F1</code></td><td>Multi-stage Dockerfile: node build stage, python 3.13-slim + uv runtime, copies <code>dist/</code> to <code>static/</code></td><td><code>Dockerfile</code>, <code>.dockerignore</code></td><td>D9</td><td>2h</td><td>Image builds under 2 min warm; size under 300MB; runs with <code>docker run -p 7777:7777</code> against an external DB.</td></tr>
+<tr><td><code>F2</code></td><td><code>docker-compose.yml</code> v3.3: db (postgres:16-alpine, healthcheck, named volume), app (depends_on healthy, env passthrough for HF)</td><td><code>docker-compose.yml</code></td><td>F1</td><td>1h</td><td><code>docker compose up --build</code> from clean clone reaches healthy in one command; port 7777 open; DB not exposed.</td></tr>
+<tr><td><code>F3</code></td><td>Startup: <code>init_db()</code> in lifespan with retry (5 x 2s) for DB readiness; <code>make up</code> alias</td><td><code>app/main.py</code>, <code>app/infrastructure/db/session.py</code>, <code>Makefile</code></td><td>F2</td><td>1h</td><td>Tables exist after first boot; second boot is idempotent; restart with volume keeps data.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>WS-G: Testing + README <span class="tag">7h</span></h2>
+<table>
+<thead><tr><th>ID</th><th>Task</th><th>Files</th><th>Dep</th><th>Hours</th><th>Done when</th></tr></thead>
+<tbody>
+<tr><td><code>G1</code></td><td>Domain suite hardening: hypothesis strategies for episodes/seasons, edge cases (duplicate episode IDs, season 0 specials)</td><td><code>tests/unit/domain/</code></td><td>B2</td><td>1h</td><td>Property tests pass 200 examples; specials grouped as season 0.</td></tr>
+<tr><td><code>G2</code></td><td>Service suite: batch-table tests via <code>pytest.mark.parametrize</code> for tracking and comment invariants</td><td><code>tests/unit/services/</code></td><td>B5, B6</td><td>1.5h</td><td>Every service method has happy + 2 failure cases. Coverage of <code>app/services</code> 100%.</td></tr>
+<tr><td><code>G3</code></td><td>Integration conftest: app against compose Postgres, truncate between tests, DI overrides for catalog + provider</td><td><code>tests/integration/conftest.py</code></td><td>C5, F2</td><td>1.5h</td><td><code>make test</code> runs unit then integration; integration skipped with clear message when DB unreachable.</td></tr>
+<tr><td><code>G4</code></td><td>AI suite: resilient + template + prompt + HF mocked transport</td><td><code>tests/unit/ai/</code></td><td>E3, E4</td><td>0.5h</td><td>No test touches the network (assert via <code>httpx.MockTransport</code>).</td></tr>
+<tr><td><code>G5</code></td><td>Frontend tests: vitest for <code>useSearch</code> debounce/abort and <code>useEpisodeTracking</code> optimistic rollback</td><td><code>src/features/**/*.test.ts</code></td><td>D3, D5</td><td>1h</td><td>4 tests green in <code>npm test</code>.</td></tr>
+<tr><td><code>G6</code></td><td>End-to-end smoke script: compose up, curl health, search, detail, toggle, comment, insight</td><td><code>scripts/smoke.sh</code></td><td>F3</td><td>0.5h</td><td>Script exits 0 on fresh clone with no HF token (fallback path) and with token.</td></tr>
+<tr><td><code>G7</code></td><td>README final: run in one command, architecture diagram (ASCII), layer table, AI provider + fallback, trade-offs, what I'd do next (auth, Alembic, TanStack Query, caching)</td><td><code>README.md</code></td><td>G6</td><td>1h</td><td>A reviewer can run and evaluate without asking a question.</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>Execution Waves</h2>
+<div class="wave">
+  <div class="wave-header"><span class="wave-num">0</span><span class="wave-title">Foundations</span><span class="wave-days">Day 1 (4h)</span></div>
+  <table><thead><tr><th>Track</th><th>Tasks</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Backend</td><td>A1, A2</td><td>Lint + test harness green before any feature</td></tr>
+  <tr><td>Frontend</td><td>A3</td><td>Tailwind theme from design-system.md</td></tr>
+  <tr><td>Docs</td><td>A4</td><td>README skeleton, filled at the end</td></tr>
+  </tbody></table>
+</div>
+<div class="wave">
+  <div class="wave-header"><span class="wave-num">1</span><span class="wave-title">Domain + infrastructure</span><span class="wave-days">Days 1-2 (10h)</span></div>
+  <table><thead><tr><th>Track</th><th>Tasks</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Domain (test first)</td><td>B1, B2, B3</td><td>Fakes written alongside Protocols</td></tr>
+  <tr><td>Adapters</td><td>B4, B7</td><td>TVMaze fixtures recorded once, committed</td></tr>
+  <tr><td>Services</td><td>B5, B6</td><td>Unit suite runs with zero I/O</td></tr>
+  <tr><td>AI core</td><td>E1, E2, E3</td><td>Fallback exists before the real provider</td></tr>
+  </tbody></table>
+</div>
+<div class="wave">
+  <div class="wave-header"><span class="wave-num">2</span><span class="wave-title">API surface</span><span class="wave-days">Days 2-3 (8h)</span></div>
+  <table><thead><tr><th>Track</th><th>Tasks</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Routes</td><td>C1, C2, C3, C4, C5</td><td>Backend usable via curl end of day 3</td></tr>
+  <tr><td>AI provider</td><td>E4, E5</td><td>HF adapter with mocked transport; real smoke manual</td></tr>
+  <tr><td>Tests</td><td>G1, G2, G4</td><td>Unit coverage locked before frontend starts</td></tr>
+  </tbody></table>
+</div>
+<div class="wave">
+  <div class="wave-header"><span class="wave-num">3</span><span class="wave-title">Frontend</span><span class="wave-days">Days 4-5 (14h)</span></div>
+  <table><thead><tr><th>Track</th><th>Tasks</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Core screens</td><td>D1, D2, D3, D4</td><td>Against live backend via Vite proxy</td></tr>
+  <tr><td>Interactions</td><td>D5, D6, D7</td><td>Optimistic toggle is the riskiest UI piece; test it (G5)</td></tr>
+  <tr><td>Polish</td><td>D8, G5</td><td>Responsive + reduced motion</td></tr>
+  </tbody></table>
+</div>
+<div class="wave">
+  <div class="wave-header"><span class="wave-num">4-5</span><span class="wave-title">Ship</span><span class="wave-days">Days 6-7 (9h)</span></div>
+  <table><thead><tr><th>Track</th><th>Tasks</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Build</td><td>D9, F1, F2, F3</td><td>One command from clean clone</td></tr>
+  <tr><td>Verification</td><td>G3, G6</td><td>Integration suite against compose DB; smoke script both AI paths</td></tr>
+  <tr><td>Delivery</td><td>G7</td><td>README with trade-offs; push public repo</td></tr>
+  </tbody></table>
+</div>
+
+<hr>
+
+<h2>Non-Goals and Guardrails</h2>
+<div class="ngoal"><strong>1.</strong> No authentication or multi-user. Single implicit user; <code>user_id</code> is the documented next step.</div>
+<div class="ngoal"><strong>2.</strong> No catalogue mirroring. TVMaze is read live (with a 60s in-process cache); the DB holds only user-generated rows.</div>
+<div class="ngoal"><strong>3.</strong> No agent framework. One inference call behind a Protocol; Agno-style orchestration is out of scope.</div>
+<div class="ngoal"><strong>4.</strong> No global state library on the frontend. Two routes, feature hooks. TanStack Query is the named upgrade path.</div>
+<div class="ngoal"><strong>5.</strong> No Alembic. <code>create_all</code> for two greenfield tables; migration tooling listed under "next steps".</div>
+<div class="ngoal"><strong>6.</strong> No pixel-perfect UI. Usability, states and clarity over aesthetics, per the challenge brief.</div>
+
+<hr>
+
+<h2>Cross-Cutting Reminders</h2>
+<div class="grid2">
+  <div class="card warn"><b>Domain imports nothing</b>B1/B2 must not import Pydantic, SQLAlchemy or FastAPI. Enforced by a ruff <code>banned-api</code> rule in <code>pyproject.toml</code> (A1).</div>
+  <div class="card warn"><b>Services never see HTTP</b>No status codes, no Request objects. Error mapping lives only in C5.</div>
+  <div class="card warn"><b>AI never 5xx</b>E3 guarantees every path returns an <code>Insight</code>. The API test in E5 asserts 200 when the provider raises.</div>
+  <div class="card warn"><b>Episode belongs to show</b>B5 validates against the catalogue before writing. Otherwise the DB accepts any integer pair.</div>
+  <div class="card warn"><b>Test first, every task</b>Each row names its test file. Red before green. Fixtures over mocks; <code>MockTransport</code> only at the httpx edge.</div>
+  <div class="card warn"><b>No secrets in the image</b><code>HF_API_TOKEN</code> comes from compose env at runtime. <code>.env</code> is in <code>.dockerignore</code> and <code>.gitignore</code>.</div>
+</div>
+
+<hr>
+
+<h2>Summary</h2>
+<div class="grid3">
+  <div class="card accent"><b>40 tasks</b>7 workstreams</div>
+  <div class="card accent"><b>51 hours</b>total effort</div>
+  <div class="card accent"><b>~24h critical path</b>3 working days if nothing else existed</div>
+</div>
+<h3>Calendar estimate (solo developer)</h3>
+<table>
+<thead><tr><th>Pace</th><th>Hours / day</th><th>Calendar days</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Sustainable</td><td>7-8</td><td>7</td><td>Waves as laid out; one day of slack for HF API surprises</td></tr>
+<tr><td>Pushed</td><td>10</td><td>5</td><td>Frontend polish (D8) and property tests (G1) trimmed to essentials</td></tr>
+<tr><td>Part-time</td><td>4</td><td>13</td><td>Same order; AI and Docker waves fit evenings</td></tr>
+</tbody>
+</table>
+<h3>Critical path</h3>
+<pre><code>A1(1h) &gt; A2(1h) &gt; B1(1.5h) &gt; B3(1h) &gt; B5(1.5h) &gt; C2(1h) &gt; C4(1.5h) &gt; C5(1.5h)
+&gt; D1(1h) &gt; D4(3h) &gt; D5(2h) &gt; D9(1h) &gt; F1(2h) &gt; F2(1h) &gt; F3(1h) &gt; G6(0.5h) &gt; G7(1h)
+Total: ~24h</code></pre>
+<h3>Launch gate checklist</h3>
+<ul class="checklist">
+  <li><span class="check"></span> <code>docker compose up --build</code> from a fresh clone serves the app on :7777 with no extra steps</li>
+  <li><span class="check"></span> Search, detail, episodes, watched toggle, comments work end to end (G6 smoke)</li>
+  <li><span class="check"></span> Watched state and comments survive <code>docker compose restart</code></li>
+  <li><span class="check"></span> Insight returns 200 with and without <code>HF_API_TOKEN</code>; fallback visibly labelled in UI</li>
+  <li><span class="check"></span> <code>make test</code>: unit suite green with no network; integration suite green against compose DB</li>
+  <li><span class="check"></span> <code>make lint</code>: ruff + mypy strict clean; domain has zero framework imports</li>
+  <li><span class="check"></span> README documents run, architecture, AI fallback, trade-offs, next steps</li>
+  <li><span class="check"></span> No secret in repo history; <code>.env.example</code> committed</li>
+</ul>
+
+<footer>Seven2U Implementation Plan v1.0 &middot; beecrowd Software Architect challenge</footer>
+</body>
+</html>

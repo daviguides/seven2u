@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven2U: Executive Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1726; --surface:#152036; --surface2:#1b2843;
+  --border:rgba(255,255,255,.09); --text:#e8ecf4; --dim:#8fa0bd;
+  --gold:#d4a73a; --gold-dim:rgba(212,167,58,.14);
+  --green:#4cc38a; --green-dim:rgba(76,195,138,.13);
+  --red:#e5534b; --amber:#d97706; --amber-dim:rgba(217,119,6,.14);
+  --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  --fig-ink:currentColor; --fig-accent:#d4a73a; --fig-muted:rgba(255,255,255,.25);
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f7f4ee; --surface:#ffffff; --surface2:#f0ece2;
+    --border:rgba(30,58,95,.14); --text:#1b2438; --dim:#5d6b85;
+    --gold:#a97e14; --gold-dim:rgba(169,126,20,.12);
+    --green:#0e7a4e; --green-dim:rgba(14,122,78,.10);
+    --red:#b3261e; --amber:#9a5b04; --amber-dim:rgba(154,91,4,.12);
+    --fig-accent:#a97e14; --fig-muted:rgba(30,58,95,.35);
+  }
+}
+*{box-sizing:border-box;margin:0;min-width:0}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, var(--gold-dim), transparent);
+  color:var(--text); font-family:var(--sans); font-size:14.5px; line-height:1.5;
+  max-width:880px; margin:0 auto; padding:48px 32px 72px;
+}
+header{margin-bottom:36px}
+.brand{font-size:40px;font-weight:700;letter-spacing:-.02em}
+.tagline{font-size:20px;margin-top:6px;line-height:1.3}
+.tagline em{font-style:italic;font-weight:700;color:var(--gold)}
+h2{font-size:20px;font-weight:600;margin:52px 0 6px}
+h2.period{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:15px}
+h2.lw{color:#58a6ff}
+h2.tw{color:#3fe08c}
+.subh{font-size:16px;margin-top:48px;font-weight:400}
+h2 + .subh{margin-top:18px}
+.hl{color:var(--gold);font-weight:700}
+.verdicts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}
+.verdict{border:1px solid var(--border);border-radius:10px;padding:20px 22px;background:var(--surface)}
+.verdict.pass{background:linear-gradient(135deg,var(--green-dim),var(--surface));border-color:var(--green)}
+.verdict.gold-v{background:linear-gradient(135deg,var(--gold-dim),var(--surface));border-color:var(--gold)}
+.verdict.amber-v{background:linear-gradient(135deg,var(--amber-dim),var(--surface));border-color:var(--amber)}
+.verdict .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.verdict .v{font-size:30px;font-weight:700;margin-top:4px}
+.verdict .v.green{color:var(--green)}
+.verdict .v.gold{color:var(--gold)}
+.verdict .v.amber{color:var(--amber)}
+.verdict .v.dim{color:var(--dim)}
+.verdict .note{font-size:12px;color:var(--dim);margin-top:6px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+th{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:9px 14px;font-family:var(--mono);font-size:13px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+td.sense{font-weight:500}
+.strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px}
+.card{border:1px solid var(--border);border-radius:10px;padding:16px 18px;background:var(--surface);font-size:12.5px;color:var(--dim)}
+.card b{display:block;color:var(--text);font-size:13px;margin-bottom:5px;font-weight:600}
+.card .tag{display:inline-block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-bottom:8px}
+.tag.gold{background:var(--gold-dim);color:var(--gold)}
+.tag.green{background:var(--green-dim);color:var(--green)}
+.tag.amber{background:var(--amber-dim);color:var(--amber)}
+.how{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-top:18px}
+.camlbl,.pathlbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.cambubble{font-family:var(--mono);font-size:15px;background:var(--surface2);border:1px solid var(--border);border-radius:12px 12px 12px 3px;padding:12px 16px;white-space:nowrap}
+.path{display:grid;grid-template-columns:70px 1fr 84px;align-items:center;gap:12px;border:1px solid var(--green);border-radius:10px;padding:10px 14px;background:var(--surface)}
+.path .pathlbl{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:11.5px;border:1px solid var(--border);border-radius:99px;padding:2px 10px;color:var(--dim)}
+.chip.on{border-color:var(--green);color:var(--green);background:var(--green-dim);font-weight:700}
+.chip.gold-c{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);font-weight:700}
+.outcome{font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;border-radius:99px;padding:4px 0;font-weight:700;color:var(--green);background:var(--green-dim)}
+.avg{display:flex;gap:20px;align-items:center;border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:20px 22px;margin-top:14px}
+.avgbars{flex:1;display:grid;gap:12px}
+.avgrow{display:grid;grid-template-columns:80px 1fr 90px;align-items:center;gap:12px}
+.avglbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.avgtrack{height:16px;border-radius:8px;background:var(--surface2);overflow:hidden}
+.avgfill{height:100%;border-radius:8px}
+.avgfill.llm{background:var(--gold)}
+.avgfill.io{background:var(--green)}
+.avgval{font-family:var(--mono);font-size:13px;text-align:right}
+.avgdelta{text-align:center;padding:6px 18px;border-left:1px solid var(--border)}
+.avgdelta .d{font-size:34px;font-weight:700;color:var(--gold)}
+.avgdelta .dl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+code{font-family:var(--mono);font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+svg.fig{width:100%;height:auto;margin:14px 0;display:block}
+footer{margin-top:36px;color:var(--dim);font-size:11.5px;border-top:1px solid var(--border);padding-top:14px}
+@media(max-width:640px){.verdicts,.strip{grid-template-columns:1fr}.how{grid-template-columns:1fr}.avg{flex-direction:column}.avgdelta{border-left:none;border-top:1px solid var(--border)}}
+@media(prefers-reduced-motion:no-preference){
+  .verdict,.card,table,.avg{animation:up .5s ease both}
+  .verdict:nth-child(2){animation-delay:.07s}
+  table{animation-delay:.14s}
+  .strip .card:nth-child(2){animation-delay:.07s}.strip .card:nth-child(3){animation-delay:.14s}
+  @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1 class="brand">Seven2U</h1>
+  <div class="tagline">Never lose where you stopped. <em>Know what to expect</em> before watching.</div>
+</header>
+
+<h2 class="period lw">What it does</h2>
+<h2 class="subh">Search <span class="hl">TVMaze</span>, track episodes in <span class="hl">Postgres</span>, get an insight from an <span class="hl">LLM behind a Protocol</span></h2>
+<div class="how">
+  <div>
+    <div class="camlbl">user types</div>
+    <div class="cambubble">"breaking bad"</div>
+  </div>
+  <div class="path">
+    <div class="pathlbl">journey</div>
+    <div class="chips">
+      <span class="chip gold-c">search</span>
+      <span class="chip">detail + seasons</span>
+      <span class="chip on">mark watched</span>
+      <span class="chip on">comment</span>
+      <span class="chip gold-c">AI insight</span>
+    </div>
+    <div class="outcome">tracked</div>
+  </div>
+</div>
+
+<h2 class="subh">Key architecture decisions</h2>
+<div class="verdicts">
+  <div class="verdict gold-v"><div class="k">Backend</div><div class="v gold">Clean Architecture</div><div class="note">FastAPI. <code>api &rarr; services &rarr; repositories &rarr; infrastructure</code>; <code>domain</code> imports nothing. Protocols + DI.</div></div>
+  <div class="verdict gold-v"><div class="k">Data ownership</div><div class="v gold">User data only</div><div class="note">TVMaze is the catalogue. Postgres holds two tables: <code>watched_episodes</code>, <code>comments</code>.</div></div>
+  <div class="verdict pass"><div class="k">AI</div><div class="v green">Pluggable</div><div class="note"><code>InsightProvider</code> Protocol. HuggingFace primary, template fallback, 8s timeout. Never a 5xx.</div></div>
+  <div class="verdict pass"><div class="k">Frontend</div><div class="v green">React + Vite</div><div class="note">Tailwind, Lucide. Feature folders with <code>use&lt;Feature&gt;</code> hooks. No global store.</div></div>
+</div>
+
+<h2 class="period tw">Architecture</h2>
+<h2 class="subh">Five layers, one direction of dependency</h2>
+<svg class="fig" viewBox="0 0 800 150" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--fig-ink)"/></marker></defs>
+  <style>
+    text{font-family:var(--mono,'monospace');font-size:11px;fill:var(--fig-ink)}
+    rect{fill:var(--surface);stroke:var(--fig-muted);stroke-width:1;rx:6}
+    line{stroke:var(--fig-muted);stroke-width:1;marker-end:url(#ah)}
+    .new rect{stroke:var(--fig-accent);stroke-width:2}
+    .new text{fill:var(--fig-accent);font-weight:700}
+    .lbl{font-size:10px;fill:var(--dim)}
+  </style>
+  <g transform="translate(10,30)"><rect width="140" height="34"/><text x="70" y="21" text-anchor="middle">api / schemas</text></g>
+  <g transform="translate(180,30)"><rect width="140" height="34"/><text x="70" y="21" text-anchor="middle">services</text></g>
+  <g transform="translate(350,30)"><rect width="140" height="34"/><text x="70" y="21" text-anchor="middle">repositories</text></g>
+  <g transform="translate(520,30)"><rect width="140" height="34"/><text x="70" y="21" text-anchor="middle">infrastructure</text></g>
+  <line x1="150" y1="47" x2="180" y2="47"/><line x1="320" y1="47" x2="350" y2="47"/><line x1="490" y1="47" x2="520" y2="47"/>
+  <g class="new" transform="translate(265,100)"><rect width="140" height="34"/><text x="70" y="21" text-anchor="middle">domain</text></g>
+  <line x1="80" y1="64" x2="300" y2="100"/><line x1="250" y1="64" x2="320" y2="100"/><line x1="420" y1="64" x2="350" y2="100"/><line x1="590" y1="64" x2="380" y2="100"/>
+  <text x="700" y="30" class="lbl">Protocols</text>
+  <text x="700" y="44" class="lbl">ShowCatalog</text>
+  <text x="700" y="58" class="lbl">WatchedRepository</text>
+  <text x="700" y="72" class="lbl">CommentRepository</text>
+  <text x="700" y="86" class="lbl">InsightProvider</text>
+</svg>
+
+<h2 class="subh">API overview</h2>
+<table>
+<thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td class="sense">GET /api/shows/search?q=</td><td>TVMaze search, mapped to domain</td></tr>
+<tr><td class="sense">GET /api/shows/{id}</td><td>Detail, summary HTML stripped</td></tr>
+<tr><td class="sense">GET /api/shows/{id}/episodes</td><td>Seasons with watched flags + completion</td></tr>
+<tr><td class="sense">PUT /api/shows/{id}/episodes/{ep}/watched</td><td>Idempotent set; validates episode belongs to show</td></tr>
+<tr><td class="sense">GET|POST /api/comments/{show|episode}/{id}</td><td>Polymorphic comments</td></tr>
+<tr><td class="sense">GET /api/insights/shows/{id}[/episodes/{ep}]</td><td>Insight; <code>source: llm | fallback</code></td></tr>
+</tbody>
+</table>
+
+<h2 class="period tw">AI integration</h2>
+<h2 class="subh">One Protocol, two providers, <span class="hl">zero</span> failure modes visible to the user</h2>
+<div class="strip">
+  <div class="card"><span class="tag gold">Protocol</span><b>InsightProvider</b><code>generate(InsightRequest) -&gt; Insight</code>. Services see nothing else.</div>
+  <div class="card"><span class="tag green">Primary</span><b>HuggingFace Inference</b>Chat-completions, instruct model, spoiler-free prompt with delimited data. Token in backend env only.</div>
+  <div class="card"><span class="tag amber">Fallback</span><b>Template provider</b>Genre-driven tone + summary excerpt + comment count. Used on timeout, error, empty text, or missing token.</div>
+</div>
+
+<h2 class="subh">Request budget</h2>
+<div class="avg">
+  <div class="avgbars">
+    <div class="avgrow"><span class="avglbl">TVMaze</span><div class="avgtrack"><div class="avgfill io" style="width:12%"></div></div><span class="avgval">200-600ms</span></div>
+    <div class="avgrow"><span class="avglbl">Postgres</span><div class="avgtrack"><div class="avgfill io" style="width:2%"></div></div><span class="avgval">&lt;10ms</span></div>
+    <div class="avgrow"><span class="avglbl">HF LLM</span><div class="avgtrack"><div class="avgfill llm" style="width:70%"></div></div><span class="avgval">2-6s</span></div>
+    <div class="avgrow"><span class="avglbl">Fallback</span><div class="avgtrack"><div class="avgfill io" style="width:1%"></div></div><span class="avgval">&lt;1ms</span></div>
+  </div>
+  <div class="avgdelta"><div class="d">8s</div><div class="dl">AI timeout cap</div></div>
+</div>
+
+<h2 class="period tw">Delivery</h2>
+<h2 class="subh">Docker Compose v3.3, port <span class="hl">7777</span>, one command</h2>
+<div class="strip">
+  <div class="card"><span class="tag gold">Build</span><b>Multi-stage Dockerfile</b>Node builds the SPA; Python 3.13 + uv serves API and static from one process.</div>
+  <div class="card"><span class="tag green">Run</span><b>docker compose up --build</b>Postgres 16 with healthcheck; app waits, runs <code>create_all</code>, listens on 7777.</div>
+  <div class="card"><span class="tag amber">Config</span><b>.env optional</b>No token = fallback insights. <code>HF_API_TOKEN</code> set = real LLM. Same schema both ways.</div>
+</div>
+
+<h2 class="subh">Implementation phases</h2>
+<div class="verdicts">
+  <div class="verdict gold-v"><div class="k">Phase 1 &middot; 20h</div><div class="v gold">Backend slice</div><div class="note">Setup, domain, Protocols, fakes, TVMaze client, services, routes. Curl-usable, tests green.</div></div>
+  <div class="verdict"><div class="k">Phase 2 &middot; 14h</div><div class="v dim">Frontend</div><div class="note">Search, detail, seasons, optimistic watched toggle, comments, insight card.</div></div>
+  <div class="verdict gold-v"><div class="k">Phase 3 &middot; 6h</div><div class="v gold">AI</div><div class="note">Protocol, template fallback, resilient wrapper, HuggingFace adapter, routes.</div></div>
+  <div class="verdict pass"><div class="k">Phase 4 &middot; 11h</div><div class="v green">Ship</div><div class="note">Dockerfile, compose, integration tests on compose DB, smoke script, README.</div></div>
+</div>
+
+<div class="verdicts">
+  <div class="verdict gold-v"><div class="k">Total effort</div><div class="v gold">51h</div><div class="note">40 tasks, 7 workstreams</div></div>
+  <div class="verdict pass"><div class="k">Solo calendar</div><div class="v green">7 days</div><div class="note">Critical path ~24h. Pushed pace: 5 days.</div></div>
+</div>
+
+<footer>Seven2U Executive Panel &middot; beecrowd Software Architect challenge</footer>
+</body>
+</html>

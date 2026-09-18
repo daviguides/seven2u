@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  FORGE — App Mockups · Seven2U
+  Structure: screens × 3 device frames (Desktop 1100 · Tablet 768 · Mobile 390),
+  stamped from <template> elements by the SCREENS / BREAKPOINTS script (Forge skeleton).
+  Seven2U is a single-surface app (no sidebar), so every shell uses a top bar.
+  Frames are width-constrained containers with a caption — no device chrome.
+-->
+<title>Seven2U — App Mockups</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.462.0/lucide.min.js"></script>
+<style>
+/* ===== FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ===== DESIGN TOKENS — Seven2U ===== */
+/* Dark mode (primary / default) */
+:root{
+  --s-ground:#0f0f0f;--s-surface:#1a1a2e;--s-surface-alt:#232342;
+  --s-text:#f0f0f0;--s-text-2:#a0a0b0;--s-text-muted:#6b6b80;--s-border:#2a2a40;
+  --s-accent:#e2b714;--s-accent-hover:#f5cc3a;--s-ai:#7c3aed;--s-ai-text:#b58bff;
+  --s-positive:#22c55e;--s-critical:#ef4444;
+  --s-shadow:none;--s-focus:0 0 0 3px rgba(226,183,20,.35);
+  --display:'Inter',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --board:#070707;--radius:12px;--t:150ms ease-out;
+  color-scheme: dark light;
+}
+[data-theme="light"]{
+  --s-ground:#fafafa;--s-surface:#ffffff;--s-surface-alt:#f5f5f5;
+  --s-text:#1a1a2e;--s-text-2:#4a4a60;--s-text-muted:#8a8a9a;--s-border:#e5e5e5;
+  --s-accent:#b8960e;--s-accent-hover:#a3850b;--s-ai:#6d28d9;--s-ai-text:#6d28d9;
+  --s-shadow:0 1px 3px rgba(0,0,0,.08);--s-focus:0 0 0 3px rgba(184,150,14,.3);
+  --board:#e9e9ec;
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== RESET ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--board);color:var(--s-text);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+svg{flex-shrink:0}
+.mono{font-family:var(--mono)}
+.muted{color:var(--s-text-2)}
+.label{font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--s-text-muted)}
+.card{background:var(--s-surface);border:1px solid var(--s-border);border-radius:var(--radius);box-shadow:var(--s-shadow)}
+
+/* ===== BOARD CHROME (doc wrapper) ===== */
+.doc-head{padding:48px 40px 8px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.doc-head h1{font-family:var(--display);font-weight:700;font-size:2.2rem;letter-spacing:-.02em}
+.doc-head h1 em{font-style:normal;color:var(--s-accent)}
+.doc-head p{color:var(--s-text-2);max-width:74ch;margin-top:8px}
+.doc-head .bp{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.doc-head .bp span{font-family:var(--mono);font-size:11px;padding:4px 10px;border:1px solid var(--s-border);border-radius:6px;background:var(--s-surface);color:var(--s-text-2)}
+.doc-nav{display:flex;gap:4px;flex-wrap:wrap}
+.doc-nav a{font-size:12px;color:var(--s-text-2);padding:6px 10px;border-radius:6px}
+.doc-nav a:hover{background:var(--s-surface);color:var(--s-text)}
+#theme-toggle{position:fixed;top:12px;right:12px;z-index:999;display:inline-flex;align-items:center;gap:8px;background:var(--s-surface);border:1px solid var(--s-border);border-radius:9999px;padding:6px 12px 6px 8px;cursor:pointer;font:inherit;font-size:12px;color:var(--s-text-2)}
+#theme-toggle svg{width:14px;height:14px;color:var(--s-accent)}
+
+/* ===== SCREEN SECTIONS ===== */
+.screen{margin:56px 0 0;padding:0 40px;scroll-margin-top:24px}
+.screen>.title{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;max-width:1400px}
+.screen>.title h2{font-family:var(--display);font-weight:600;font-size:1.4rem;letter-spacing:-.01em}
+.screen>.title .idx{font-family:var(--mono);font-size:11px;color:var(--s-accent)}
+.screen>.title p{color:var(--s-text-2);font-size:13px;margin-left:auto;max-width:64ch;text-align:right}
+.board{display:flex;gap:40px;align-items:flex-start;overflow-x:auto;padding:8px 8px 40px}
+
+/* ===== DEVICE FRAMES (no chrome — width-constrained containers + caption) ===== */
+.frame{flex:none}
+.frame .cap{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;padding-left:2px}
+.frame .cap b{font-weight:500;font-size:13px}
+.frame .cap span{font-family:var(--mono);font-size:11px;color:var(--s-text-muted)}
+.dev{overflow:hidden;background:var(--s-ground);display:flex;flex-direction:column;border:1px solid var(--s-border);border-radius:12px;box-shadow:0 24px 60px -12px rgba(0,0,0,.35)}
+.f-d{width:1100px}.f-d .dev{height:820px}
+.f-t{width:768px}.f-t .dev{height:960px}
+.f-m{width:390px}.f-m .dev{height:844px}
+.dev>.dsk,.dev>.tab,.dev>.mob{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+.dsk .main,.tab .main,.mob .main{overflow-y:auto;min-height:0;flex:1;scrollbar-width:thin;scrollbar-color:var(--s-border) transparent}
+
+/* ===== SHELLS — top bar on every breakpoint (single-surface app) ===== */
+.topbar{flex:none;display:flex;align-items:center;gap:24px;padding:14px 32px;background:var(--s-surface);border-bottom:1px solid var(--s-border)}
+.tab .topbar{padding:12px 20px;gap:16px}
+.mob .topbar{padding:12px 16px;gap:10px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:20px;color:var(--s-accent);letter-spacing:-.02em;white-space:nowrap}
+.brand span{color:var(--s-text);font-weight:400}
+.mob .brand{font-size:18px}
+.search-wrap{position:relative;flex:1;max-width:560px}
+.mob .search-wrap{flex-basis:100%;max-width:none}
+.search-wrap>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--s-text-muted)}
+.input{width:100%;padding:10px 14px 10px 42px;background:var(--s-ground);border:1px solid var(--s-border);border-radius:8px;color:var(--s-text);font:inherit;font-size:15px}
+[data-theme="light"] .input{background:var(--s-surface-alt)}
+.input::placeholder{color:var(--s-text-muted)}
+.input.focus{border-color:var(--s-accent);box-shadow:var(--s-focus)}
+.spinner{position:absolute;right:14px;top:50%;width:16px;height:16px;margin-top:-8px;border:2px solid var(--s-border);border-top-color:var(--s-accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dsk .main{padding:32px}
+.tab .main{padding:24px 20px}
+.mob .main{padding:20px 16px 32px}
+
+/* ===== PAGE CONTENT ===== */
+.empty{text-align:center;padding:80px 24px;color:var(--s-text-2)}
+.mob .empty{padding:56px 12px}
+.empty svg{width:40px;height:40px;color:var(--s-text-muted);margin-bottom:16px}
+.empty h3{color:var(--s-text);font-size:24px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em}
+.mob .empty h3{font-size:20px}
+.empty p{font-size:15px}
+
+.results-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.results-head h3{font-size:18px;font-weight:600}
+.mob .results-head h3{font-size:16px}
+.results-head span{font-family:var(--mono);font-size:12px;color:var(--s-text-muted)}
+.grid{display:grid;gap:20px;grid-template-columns:repeat(4,1fr)}
+.tab .grid{grid-template-columns:repeat(2,1fr);gap:16px}
+.mob .grid{grid-template-columns:1fr;gap:12px}
+
+.series-card{overflow:hidden;cursor:pointer;transition:transform var(--t),background var(--t),border-color var(--t)}
+.series-card:hover{transform:translateY(-2px);background:var(--s-surface-alt);border-color:var(--s-text-muted)}
+.poster{aspect-ratio:2/3;display:flex;align-items:flex-end;padding:14px;font-weight:700;font-size:20px;color:#fff;letter-spacing:-.01em;text-shadow:0 2px 10px rgba(0,0,0,.7);border-radius:8px;line-height:1.1}
+.g-dark{background:radial-gradient(120% 80% at 80% 0%,rgba(226,183,20,.35),transparent 50%),linear-gradient(165deg,#06101f 0%,#12213c 55%,#0a0a0a 100%)}
+.g-matter{background:radial-gradient(90% 60% at 20% 20%,rgba(124,58,237,.55),transparent 60%),linear-gradient(160deg,#0d0d1a 0%,#2e1065 100%)}
+.g-winds{background:radial-gradient(100% 70% at 60% 100%,rgba(226,120,40,.5),transparent 60%),linear-gradient(160deg,#1a0e08 0%,#5a2c12 100%)}
+.g-inthedark{background:radial-gradient(90% 60% at 80% 80%,rgba(34,197,94,.35),transparent 60%),linear-gradient(160deg,#0f1f1a 0%,#1f3d33 100%)}
+.series-card .poster{border-radius:0}
+.series-card .body{padding:12px 14px 14px}
+.series-card .title{font-weight:600;font-size:15px}
+.series-card .year{font-family:var(--mono);font-size:12px;color:var(--s-text-muted);margin-top:2px}
+.mob .series-card{display:grid;grid-template-columns:88px 1fr}
+.mob .series-card .poster{font-size:13px;padding:8px}
+.mob .series-card .body{align-self:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:500;background:var(--s-surface-alt);color:var(--s-text-2);border:1px solid var(--s-border);white-space:nowrap}
+.chip.pos{background:rgba(34,197,94,.14);color:var(--s-positive);border-color:rgba(34,197,94,.3)}
+.chip svg{width:12px;height:12px}
+
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--s-text-2);font-size:14px;font-weight:500;margin-bottom:24px;cursor:pointer}
+.back svg{width:16px;height:16px}
+.mob .back{margin-bottom:16px}
+.hero{display:grid;grid-template-columns:220px 1fr;gap:32px;margin-bottom:32px}
+.tab .hero{grid-template-columns:180px 1fr;gap:24px}
+.mob .hero{grid-template-columns:120px 1fr;gap:16px;margin-bottom:24px}
+.hero .poster{font-size:28px}
+.mob .hero .poster{font-size:16px;padding:10px}
+.hero h1{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.tab .hero h1{font-size:40px}
+.mob .hero h1{font-size:28px}
+.hero .meta{display:flex;align-items:center;gap:12px;margin:10px 0 14px;font-family:var(--mono);font-size:13px;color:var(--s-text-muted)}
+.mob .hero .meta{font-size:12px;gap:8px}
+.hero .summary{font-size:16px;color:var(--s-text-2);max-width:640px;margin-top:16px;line-height:1.6}
+.tab .hero .summary{font-size:15px}
+.mob .hero .summary{font-size:14px;margin-top:0;grid-column:1/-1}
+.hero .actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.mob .hero .actions{display:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all var(--t)}
+.btn-primary{background:var(--s-accent);color:#0f0f0f}
+.btn.sm{padding:6px 12px;font-size:13px}
+
+.insight{background:var(--s-surface);border:1px solid rgba(124,58,237,.5);border-left:3px solid var(--s-ai);border-radius:12px;padding:16px 18px;box-shadow:var(--s-shadow)}
+.insight .head{display:flex;align-items:center;gap:8px;color:var(--s-ai-text);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.insight .head svg{width:14px;height:14px}
+.insight p{font-size:14px;line-height:1.6}
+.insight.loading{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{border-color:rgba(124,58,237,.45)}50%{border-color:rgba(124,58,237,1)}}
+.insight.fallback{border-left-color:var(--s-text-muted);border-color:var(--s-border)}
+.insight.fallback .head{color:var(--s-text-muted)}.insight.fallback p{color:var(--s-text-2)}
+
+.detail-grid{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}
+.tab .detail-grid,.mob .detail-grid{grid-template-columns:1fr;gap:24px}
+.dsk .rail-first{order:0}
+.tab .rail-first,.mob .rail-first{order:-1}
+.section-h{display:flex;align-items:center;justify-content:space-between;margin:28px 0 12px}
+.section-h.first{margin-top:0}
+.section-h h3{font-size:18px;font-weight:600}
+.section-h .count{font-family:var(--mono);font-size:12px;color:var(--s-text-muted)}
+
+.season-tabs{display:flex;gap:4px;border-bottom:1px solid var(--s-border);margin-bottom:16px;overflow-x:auto}
+.season-tabs button{font:inherit;font-size:14px;font-weight:500;color:var(--s-text-2);background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;cursor:pointer;white-space:nowrap;display:inline-flex;gap:8px;align-items:center}
+.season-tabs button .n{font-family:var(--mono);font-size:11px;color:var(--s-text-muted)}
+.season-tabs button.on{color:var(--s-text);border-bottom-color:var(--s-accent)}
+.mob .season-tabs{display:none}
+.accordion{display:none}
+.mob .accordion{display:block}
+.mob .desk-only{display:none}
+.accordion-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--s-border);font-weight:600;font-size:15px}
+.accordion-row .n{font-family:var(--mono);font-size:12px;color:var(--s-text-muted);font-weight:400;margin-left:8px}
+.accordion-row svg{width:18px;height:18px;color:var(--s-text-muted)}
+.accordion-row.open svg{transform:rotate(180deg)}
+.progress-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--s-text-2);margin-bottom:6px}
+.progress-meta .mono{color:var(--s-text-muted);font-size:12px}
+.progress{height:6px;background:var(--s-surface-alt);border-radius:9999px;overflow:hidden;margin-bottom:16px}
+.progress>div{height:100%;background:var(--s-positive);border-radius:9999px}
+
+.ep-list{overflow:hidden}
+.ep-row{display:grid;grid-template-columns:68px 1fr auto auto;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--s-border);transition:background var(--t);cursor:pointer}
+.ep-row:hover{background:var(--s-surface-alt)}
+.ep-row:last-child{border-bottom:0}
+.ep-row .code{font-family:var(--mono);font-size:12px;color:var(--s-text-muted)}
+.ep-row .t{font-weight:500;font-size:15px}
+.ep-row.watched .t{color:var(--s-text-2)}
+.ep-row .cm{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--s-text-muted)}
+.ep-row .cm svg{width:14px;height:14px}
+.mob .ep-row{grid-template-columns:1fr auto;grid-template-areas:"code cm" "title toggle";row-gap:6px}
+.mob .ep-row .code{grid-area:code}.mob .ep-row .t{grid-area:title}
+.mob .ep-row .cm{grid-area:cm;justify-self:end}.mob .ep-row .watch-toggle{grid-area:toggle;justify-self:end}
+.watch-toggle{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:9999px;border:1px solid var(--s-border);background:transparent;color:var(--s-text-2);font:inherit;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all var(--t)}
+.watch-toggle svg{width:14px;height:14px}
+.watch-toggle.on{background:rgba(34,197,94,.14);color:var(--s-positive);border-color:rgba(34,197,94,.4)}
+.watch-toggle.lg{padding:9px 16px;font-size:14px}
+.watch-toggle.lg svg{width:16px;height:16px}
+.mob .watch-toggle.lg{width:100%;justify-content:center}
+
+.comments{padding:16px 18px}
+.comment{padding:12px 0;border-bottom:1px solid var(--s-border)}
+.comment:last-of-type{border:0}
+.comment .when{font-family:var(--mono);font-size:11px;color:var(--s-text-muted);margin-bottom:4px}
+.comment p{font-size:14px}
+textarea.input{padding:12px 14px;min-height:88px;resize:vertical;font-size:14px}
+.comment-form{margin-top:12px}
+.comment-form .foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--s-text-muted)}
+
+.ep-hero{margin-bottom:24px}
+.ep-hero .crumb{font-family:var(--mono);font-size:12px;color:var(--s-text-muted);margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.ep-hero .crumb b{color:var(--s-accent);font-weight:500}
+.ep-hero h1{font-size:32px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.ep-hero h1 .code{font-family:var(--mono);font-size:16px;color:var(--s-text-muted);font-weight:400}
+.mob .ep-hero h1{font-size:24px}
+.ep-hero .meta{display:flex;gap:12px;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--s-text-muted)}
+.ep-hero .summary{color:var(--s-text-2);font-size:16px;max-width:640px;margin-top:12px;line-height:1.6}
+.mob .ep-hero .summary{font-size:14px}
+.ep-hero .actions{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--s-text-muted)}
+.ep-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:20px;border-top:1px solid var(--s-border);font-size:14px;color:var(--s-text-2)}
+.ep-nav b{color:var(--s-text);font-weight:500;display:block}
+.ep-nav .code{font-family:var(--mono);font-size:11px;color:var(--s-text-muted)}
+
+/* ===== STATE HELPERS ===== */
+.sk{background:linear-gradient(90deg,var(--s-surface-alt) 25%,var(--s-border) 50%,var(--s-surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.sk.line{height:12px;margin-bottom:8px}
+.sk.poster{aspect-ratio:2/3;border-radius:8px}
+.sk.pill{width:90px;height:26px;border-radius:9999px}
+.toast-wrap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:5}
+.toast{display:inline-flex;align-items:center;gap:12px;background:var(--s-surface-alt);border:1px solid var(--s-border);border-left:3px solid var(--s-critical);padding:12px 16px;border-radius:8px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+.mob .toast{font-size:13px}
+.toast svg{width:18px;height:18px;color:var(--s-critical)}
+.toast .act{color:var(--s-accent);font-weight:600;cursor:pointer}
+.ep-error{padding:32px;text-align:center;color:var(--s-text-muted);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="doc-head">
+  <div>
+    <h1><em>Seven2U</em> Mockups</h1>
+    <p>Interactive TV series companion at three breakpoints. Dark-first with light mode. Real sample data throughout: the series "Dark" (2017), its Season 1 episodes, and one viewer's notes.</p>
+    <div class="bp"><span>desktop 1100px</span><span>tablet 768px</span><span>mobile 390px</span><span>round 1</span></div>
+  </div>
+  <nav class="doc-nav" id="doc-nav"></nav>
+</div>
+<button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"><i data-lucide="moon"></i><span id="theme-label">Dark</span></button>
+
+<!-- ===== SHELL TEMPLATES ===== -->
+
+<!-- Top bar (idle search) — used on all breakpoints -->
+<template id="tmpl-topbar">
+  <div class="topbar">
+    <div class="brand">Seven<span>2U</span></div>
+    <div class="search-wrap"><i data-lucide="search"></i><input class="input" placeholder="Search series, e.g. Dark, Severance, Chernobyl"></div>
+  </div>
+</template>
+
+<!-- Top bar with active query -->
+<template id="tmpl-topbar-query">
+  <div class="topbar">
+    <div class="brand">Seven<span>2U</span></div>
+    <div class="search-wrap"><i data-lucide="search"></i><input class="input focus" value="dark"></div>
+  </div>
+</template>
+
+<!-- Top bar, searching (inline spinner) -->
+<template id="tmpl-topbar-loading">
+  <div class="topbar">
+    <div class="brand">Seven<span>2U</span></div>
+    <div class="search-wrap"><i data-lucide="search"></i><input class="input focus" value="dark"><span class="spinner"></span></div>
+  </div>
+</template>
+
+<!-- Top bar with a query that returns nothing -->
+<template id="tmpl-topbar-xyz">
+  <div class="topbar">
+    <div class="brand">Seven<span>2U</span></div>
+    <div class="search-wrap"><i data-lucide="search"></i><input class="input focus" value="xyzabc"></div>
+  </div>
+</template>
+
+<!-- ===== SCREEN TEMPLATES ===== -->
+<!-- Each <template> is stamped into 3 device frames. The shell gets .dsk / .tab / .mob
+     so CSS varies the layout per breakpoint. -->
+
+<!-- SCREEN 1a: Search — empty -->
+<template id="tmpl-search-empty">
+  <div class="empty">
+    <i data-lucide="search"></i>
+    <h3>Discover your next series</h3>
+    <p>Search by title to see details, episodes and spoiler-free AI insights.</p>
+  </div>
+</template>
+
+<!-- SCREEN 1b: Search — results for "dark" -->
+<template id="tmpl-search-results">
+  <div class="results-head"><h3>Results for "dark"</h3><span>4 series · TVMaze</span></div>
+  <div class="grid">
+    <div class="card series-card"><div class="poster g-dark">Dark</div><div class="body"><div class="title">Dark</div><div class="year">2017</div><div class="chips"><span class="chip">Sci-Fi</span><span class="chip">Thriller</span><span class="chip">Drama</span></div></div></div>
+    <div class="card series-card"><div class="poster g-matter">Dark Matter</div><div class="body"><div class="title">Dark Matter</div><div class="year">2024</div><div class="chips"><span class="chip">Drama</span><span class="chip">Sci-Fi</span><span class="chip">Thriller</span></div></div></div>
+    <div class="card series-card"><div class="poster g-winds">Dark Winds</div><div class="body"><div class="title">Dark Winds</div><div class="year">2022</div><div class="chips"><span class="chip">Crime</span><span class="chip">Drama</span><span class="chip">Thriller</span></div></div></div>
+    <div class="card series-card"><div class="poster g-inthedark">In the Dark</div><div class="body"><div class="title">In the Dark</div><div class="year">2019</div><div class="chips"><span class="chip">Comedy</span><span class="chip">Drama</span></div></div></div>
+  </div>
+</template>
+
+<!-- SCREEN 2: Series Detail — Dark (2017) -->
+<template id="tmpl-series">
+  <div class="back"><i data-lucide="arrow-left"></i>Back to results</div>
+  <div class="hero">
+    <div class="poster g-dark">Dark</div>
+    <div>
+      <h1>Dark</h1>
+      <div class="meta"><span>2017 – 2020</span><span>·</span><span>3 seasons</span><span>·</span><span>26 episodes</span></div>
+      <div class="chips"><span class="chip">Sci-Fi</span><span class="chip">Thriller</span><span class="chip">Drama</span></div>
+      <p class="summary desk-only">A missing child sets four families on a frantic hunt for answers as they unearth a mind-bending mystery that spans three generations.</p>
+      <div class="actions">
+        <span class="chip pos" style="padding:8px 12px;font-size:13px"><i data-lucide="eye"></i>2 of 26 watched</span>
+        <span class="chip" style="padding:8px 12px;font-size:13px"><i data-lucide="message-circle"></i>1 comment</span>
+      </div>
+    </div>
+    <p class="summary accordion">A missing child sets four families on a frantic hunt for answers as they unearth a mind-bending mystery that spans three generations.</p>
+  </div>
+
+  <div class="detail-grid">
+    <div>
+      <div class="section-h first"><h3>Episodes</h3><span class="count">26 total</span></div>
+      <div class="season-tabs">
+        <button class="on">Season 1 <span class="n">10 ep</span></button>
+        <button>Season 2 <span class="n">8 ep</span></button>
+        <button>Season 3 <span class="n">8 ep</span></button>
+      </div>
+      <div class="desk-only">
+        <div class="progress-meta"><span>Season 1: 2/10 watched</span><span class="mono">20%</span></div>
+        <div class="progress"><div style="width:20%"></div></div>
+      </div>
+      <div class="card ep-list">
+        <div class="accordion">
+          <div class="accordion-row open"><span>Season 1<span class="n">10 ep</span></span><i data-lucide="chevron-down"></i></div>
+          <div style="padding:12px 14px 4px">
+            <div class="progress-meta"><span>2/10 watched</span><span class="mono">20%</span></div>
+            <div class="progress" style="margin-bottom:4px"><div style="width:20%"></div></div>
+          </div>
+        </div>
+        <div class="ep-row watched"><span class="code">S01E01</span><span class="t">Secrets</span><span class="cm"><i data-lucide="message-circle"></i>1</span><button class="watch-toggle on"><i data-lucide="eye"></i>Watched</button></div>
+        <div class="ep-row watched"><span class="code">S01E02</span><span class="t">Lies</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle on"><i data-lucide="eye"></i>Watched</button></div>
+        <div class="ep-row"><span class="code">S01E03</span><span class="t">Past and Present</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button></div>
+        <div class="ep-row"><span class="code">S01E04</span><span class="t">Double Lives</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button></div>
+        <div class="ep-row desk-only"><span class="code">S01E05</span><span class="t">Truths</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button></div>
+        <div class="ep-row desk-only"><span class="code">S01E06</span><span class="t">Sic Mundus Creatus Est</span><span class="cm"><i data-lucide="message-circle"></i>0</span><button class="watch-toggle"><i data-lucide="eye-off"></i>Mark watched</button></div>
+        <div class="accordion">
+          <div class="accordion-row" style="border-top:1px solid var(--s-border)"><span>Season 2<span class="n">8 ep</span></span><i data-lucide="chevron-down"></i></div>
+          <div class="accordion-row" style="border-bottom:0"><span>Season 3<span class="n">8 ep</span></span><i data-lucide="chevron-down"></i></div>
+        </div>
+      </div>
+      <div class="section-h"><h3>Your notes</h3><span class="count">1 comment</span></div>
+      <div class="card comments">
+        <div class="comment"><div class="when">2026-09-12 · 22:41</div><p>Mind-blowing from episode 1. The family tree is impossible to track without a diagram.</p></div>
+        <div class="comment-form">
+          <textarea class="input" placeholder="Add a note about this series…"></textarea>
+          <div class="foot"><span>Only you can see this</span><button class="btn btn-primary sm">Post</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="rail-first">
+      <div class="insight">
+        <div class="head"><i data-lucide="sparkles"></i>AI Insight</div>
+        <p>A labyrinthine time-travel saga that rewards patient viewers. Combines existential philosophy with family drama. If you enjoyed Primer or Predestination, Dark's non-linear narrative will captivate you.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- SCREEN 3: Episode Detail — S01E01 "Secrets" -->
+<template id="tmpl-episode">
+  <div class="back"><i data-lucide="arrow-left"></i>Back to Dark</div>
+  <div class="detail-grid">
+    <div>
+      <div class="ep-hero">
+        <div class="crumb"><b>Dark</b><span>/</span><span>Season 1</span><span>/</span><span>Episode 1</span></div>
+        <h1><span class="code">S01E01</span>Secrets</h1>
+        <div class="meta"><span>Aired 2017-12-01</span><span>·</span><span>51 min</span></div>
+        <p class="summary">A boy's disappearance sets off a chain of events that unravels the past of four families.</p>
+        <div class="actions">
+          <button class="watch-toggle lg on"><i data-lucide="eye"></i>Watched</button>
+          <span class="desk-only">Marked on 2026-09-12</span>
+        </div>
+      </div>
+      <div class="section-h"><h3>Your notes</h3><span class="count">1 comment</span></div>
+      <div class="card comments">
+        <div class="comment"><div class="when">2026-09-12 · 23:05</div><p>The cave scene gave me chills. Pure atmosphere.</p></div>
+        <div class="comment-form">
+          <textarea class="input" placeholder="What did you think of this episode?"></textarea>
+          <div class="foot"><span>Only you can see this</span><button class="btn btn-primary sm">Post comment</button></div>
+        </div>
+      </div>
+      <div class="ep-nav">
+        <div><span class="code">Previous</span><b style="color:var(--s-text-muted)">—</b></div>
+        <div style="text-align:right"><span class="code">Next · S01E02</span><b>Lies</b></div>
+      </div>
+    </div>
+    <div class="rail-first">
+      <div class="insight">
+        <div class="head"><i data-lucide="sparkles"></i>AI Insight · Episode</div>
+        <p>This episode establishes the central mystery with masterful tension. Focuses on atmosphere and character introduction rather than immediate answers. A slow-burn opening that sets the tone for the series.</p>
+      </div>
+      <div class="card desk-only" style="margin-top:16px;padding:14px 16px">
+        <div class="label" style="margin-bottom:10px">Season 1 progress</div>
+        <div class="progress-meta"><span>2/10 watched</span><span class="mono">20%</span></div>
+        <div class="progress" style="margin-bottom:0"><div style="width:20%"></div></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- SCREEN 4a: States — loading search results -->
+<template id="tmpl-state-loading-search">
+  <div class="results-head"><div class="sk line" style="width:160px;height:16px;margin:0"></div><span>searching…</span></div>
+  <div class="grid">
+    <div class="card series-card"><div class="sk poster" style="border-radius:0"></div><div class="body"><div class="sk line" style="width:60%"></div><div class="sk line" style="width:30%"></div><div class="chips"><span class="sk" style="width:48px;height:20px"></span><span class="sk" style="width:56px;height:20px"></span></div></div></div>
+    <div class="card series-card"><div class="sk poster" style="border-radius:0"></div><div class="body"><div class="sk line" style="width:75%"></div><div class="sk line" style="width:30%"></div><div class="chips"><span class="sk" style="width:48px;height:20px"></span><span class="sk" style="width:56px;height:20px"></span></div></div></div>
+    <div class="card series-card"><div class="sk poster" style="border-radius:0"></div><div class="body"><div class="sk line" style="width:55%"></div><div class="sk line" style="width:30%"></div><div class="chips"><span class="sk" style="width:48px;height:20px"></span><span class="sk" style="width:56px;height:20px"></span></div></div></div>
+    <div class="card series-card"><div class="sk poster" style="border-radius:0"></div><div class="body"><div class="sk line" style="width:65%"></div><div class="sk line" style="width:30%"></div><div class="chips"><span class="sk" style="width:48px;height:20px"></span><span class="sk" style="width:56px;height:20px"></span></div></div></div>
+  </div>
+</template>
+
+<!-- SCREEN 4b: States — loading series detail + AI insight pulsing -->
+<template id="tmpl-state-loading-detail">
+  <div class="back"><i data-lucide="arrow-left"></i>Back to results</div>
+  <div class="hero">
+    <div class="sk poster"></div>
+    <div>
+      <div class="sk" style="width:200px;height:44px;margin-bottom:14px"></div>
+      <div class="sk line" style="width:180px"></div>
+      <div class="chips" style="margin-bottom:20px"><span class="sk" style="width:52px;height:22px"></span><span class="sk" style="width:60px;height:22px"></span><span class="sk" style="width:52px;height:22px"></span></div>
+      <div class="desk-only"><div class="sk line" style="width:90%"></div><div class="sk line" style="width:80%"></div><div class="sk line" style="width:45%"></div></div>
+    </div>
+  </div>
+  <div class="detail-grid">
+    <div>
+      <div class="sk line" style="width:120px;height:16px;margin-bottom:16px"></div>
+      <div class="card ep-list">
+        <div class="ep-row"><span class="sk line" style="width:52px;margin:0"></span><span class="sk line" style="width:40%;margin:0"></span><span></span><span class="sk pill"></span></div>
+        <div class="ep-row"><span class="sk line" style="width:52px;margin:0"></span><span class="sk line" style="width:30%;margin:0"></span><span></span><span class="sk pill"></span></div>
+        <div class="ep-row"><span class="sk line" style="width:52px;margin:0"></span><span class="sk line" style="width:50%;margin:0"></span><span></span><span class="sk pill"></span></div>
+      </div>
+    </div>
+    <div class="rail-first">
+      <div class="insight loading">
+        <div class="head"><i data-lucide="sparkles"></i>Generating insight…</div>
+        <div class="sk line" style="width:95%"></div><div class="sk line" style="width:85%"></div><div class="sk line" style="width:70%"></div><div class="sk line" style="width:40%;margin-bottom:0"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- SCREEN 4c: States — error toast + AI fallback -->
+<template id="tmpl-state-error">
+  <div class="back"><i data-lucide="arrow-left"></i>Back to results</div>
+  <div class="hero">
+    <div class="poster g-dark">Dark</div>
+    <div>
+      <h1>Dark</h1>
+      <div class="meta"><span>2017 – 2020</span><span>·</span><span>3 seasons</span></div>
+      <div class="chips"><span class="chip">Sci-Fi</span><span class="chip">Thriller</span><span class="chip">Drama</span></div>
+      <p class="summary desk-only">A missing child sets four families on a frantic hunt for answers as they unearth a mind-bending mystery that spans three generations.</p>
+    </div>
+  </div>
+  <div class="detail-grid">
+    <div>
+      <div class="section-h first"><h3>Episodes</h3></div>
+      <div class="card ep-error">Episodes could not be loaded.</div>
+    </div>
+    <div class="rail-first">
+      <div class="insight fallback">
+        <div class="head"><i data-lucide="sparkles"></i>AI Insight</div>
+        <p>AI insights temporarily unavailable. Check back later.</p>
+      </div>
+    </div>
+  </div>
+  <div style="height:80px"></div>
+  <div class="toast-wrap"><div class="toast"><i data-lucide="alert-circle"></i>Failed to load series.<span class="act">Retry</span></div></div>
+</template>
+
+<!-- SCREEN 4d: States — empty search -->
+<template id="tmpl-state-empty">
+  <div class="empty">
+    <i data-lucide="search"></i>
+    <h3>No series found for "xyzabc"</h3>
+    <p>Try a different search.</p>
+  </div>
+</template>
+
+<script>
+// ===== SCREEN DEFINITIONS =====
+const SCREENS = [
+  { id: 'search-empty',         idx: '01a', title: 'Search — empty',                 hint: 'The front door. Invite discovery before any query.',                           topbar: 'tmpl-topbar' },
+  { id: 'search-results',       idx: '01b', title: 'Search — results for "dark"',    hint: '4 columns on desktop, 2 on tablet, poster-left list on mobile.',                topbar: 'tmpl-topbar-query' },
+  { id: 'series',               idx: '02',  title: 'Series Detail — Dark (2017)',     hint: 'AI insight in the right rail on desktop, under the hero elsewhere. Season tabs become an accordion on mobile.', topbar: 'tmpl-topbar-query' },
+  { id: 'episode',              idx: '03',  title: 'Episode Detail — S01E01 "Secrets"', hint: 'Breadcrumb back to the series, a large watched toggle, episode-level insight before the user\'s notes.', topbar: 'tmpl-topbar-query' },
+  { id: 'state-loading-search', idx: '04a', title: 'State — loading search',          hint: 'Inline spinner in the search bar; skeleton cards, never a page spinner.',        topbar: 'tmpl-topbar-loading' },
+  { id: 'state-loading-detail', idx: '04b', title: 'State — loading detail',          hint: 'Skeleton hero and rows; the AI insight card pulses violet while generating.',    topbar: 'tmpl-topbar-query' },
+  { id: 'state-error',          idx: '04c', title: 'State — error + AI fallback',     hint: 'Toast with retry at the bottom; insight card degrades to a neutral fallback.',   topbar: 'tmpl-topbar-query' },
+  { id: 'state-empty',          idx: '04d', title: 'State — empty search',            hint: 'No results. Say so plainly and suggest a different search.',                    topbar: 'tmpl-topbar-xyz' },
+];
+
+// ===== FRAME STAMPING =====
+const BREAKPOINTS = [
+  { cls: 'f-d', label: 'Desktop', size: '1100 × 820', shell: 'dsk' },
+  { cls: 'f-t', label: 'Tablet',  size: '768 × 960',  shell: 'tab' },
+  { cls: 'f-m', label: 'Mobile',  size: '390 × 844',  shell: 'mob' },
+];
+
+function stamp(tmplId) {
+  const t = document.getElementById(tmplId);
+  return t ? t.content.cloneNode(true) : document.createDocumentFragment();
+}
+
+const nav = document.getElementById('doc-nav');
+SCREENS.forEach(s => {
+  const link = document.createElement('a');
+  link.href = '#' + s.id; link.textContent = s.idx + ' · ' + s.title.split(' — ')[0];
+  nav.appendChild(link);
+
+  const section = document.createElement('div');
+  section.className = 'screen'; section.id = s.id;
+  section.innerHTML = `<div class="title"><span class="idx">${s.idx}</span><h2>${s.title}</h2><p>${s.hint}</p></div>`;
+  const board = document.createElement('div');
+  board.className = 'board';
+
+  BREAKPOINTS.forEach(bp => {
+    const frame = document.createElement('div');
+    frame.className = `frame ${bp.cls}`;
+    frame.innerHTML = `<div class="cap"><b>${bp.label}</b><span>${bp.size}</span></div>`;
+    const dev = document.createElement('div');
+    dev.className = 'dev';
+    const shell = document.createElement('div');
+    shell.className = bp.shell;
+    shell.appendChild(stamp(s.topbar));
+    const main = document.createElement('div');
+    main.className = 'main';
+    main.appendChild(stamp(`tmpl-${s.id}`));
+    shell.appendChild(main);
+    dev.appendChild(shell);
+    frame.appendChild(dev);
+    board.appendChild(frame);
+  });
+
+  section.appendChild(board);
+  document.body.appendChild(section);
+});
+
+function applyTheme(n){
+  document.documentElement.setAttribute('data-theme',n);
+  document.getElementById('theme-label').textContent=n==='dark'?'Dark':'Light';
+  document.getElementById('theme-toggle').querySelector('i,svg').outerHTML='<i data-lucide="'+(n==='dark'?'moon':'sun')+'"></i>';
+  lucide.createIcons();
+}
+function toggleTheme(){
+  var n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  applyTheme(n);localStorage.setItem('theme',n);
+}
+(function(){var s=localStorage.getItem('theme');applyTheme(s||'dark');})();
+</script>
+</body>
+</html>

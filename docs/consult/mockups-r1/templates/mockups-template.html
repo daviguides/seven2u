@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  ╔═══════════════════════════════════════════════════════════╗
+  ║  FORGE — App Mockups Template                            ║
+  ║                                                          ║
+  ║  HOW TO CUSTOMIZE:                                       ║
+  ║  1. Replace CSS vars in :root with your design tokens    ║
+  ║  2. Update Google Fonts import for your fonts            ║
+  ║  3. Replace [PRODUCT] with your app name                 ║
+  ║  4. Fill each <template> with your screen content        ║
+  ║  5. Add/remove screens in the SCREENS array (line ~end)  ║
+  ║                                                          ║
+  ║  STRUCTURE: 5 screens × 3 device frames each             ║
+  ║  Desktop 1100px · Tablet 768px · Mobile 390px            ║
+  ╚═══════════════════════════════════════════════════════════╝
+-->
+<title>[PRODUCT] — App Mockups</title>
+<style>
+/* ===== FONTS — Replace with your Google Fonts import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap');
+
+/* ===== DESIGN TOKENS — Replace with your design-system.md values ===== */
+/* Light mode (default) */
+:root{
+  --s-ground:#F5F7F2;       /* Page background */
+  --s-surface:#FFFFFF;       /* Cards, panels */
+  --s-surface-alt:#E8EDE5;   /* Alternate sections */
+  --s-text:#2D3B2D;          /* Primary text */
+  --s-text-muted:#7A8C7A;    /* Secondary text */
+  --s-border:#D4DDD0;        /* Borders, dividers */
+  --s-accent:#D4AF37;        /* Primary accent */
+  --s-positive:#5B9A6F;      /* Positive / in range */
+  --s-warning:#C67D5A;       /* Warning / out of range */
+  --s-critical:#B85C5C;      /* Critical alerts */
+  --s-neutral:#9CA89C;       /* Neutral / stable */
+
+  --display:'Outfit',sans-serif;
+  --body:'Inter',sans-serif;
+  --mono:'Fira Code',monospace;
+
+  --board:#E0E5DD;           /* Board background (behind frames) */
+  --radius:16px;
+
+  color-scheme: light dark;
+}
+
+/* Dark mode — replace values with your design-system.md dark tokens */
+[data-theme="dark"]{
+  --s-ground:#1A1A1A;
+  --s-surface:#242424;
+  --s-surface-alt:#2E2E2E;
+  --s-text:#E8E4DC;
+  --s-text-muted:#9A9A94;
+  --s-border:#3A3A3A;
+  --board:#141414;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --s-ground:#1A1A1A;
+    --s-surface:#242424;
+    --s-surface-alt:#2E2E2E;
+    --s-text:#E8E4DC;
+    --s-text-muted:#9A9A94;
+    --s-border:#3A3A3A;
+    --board:#141414;
+  }
+}
+
+/* ===== RESET ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--board);color:var(--s-text);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono)}
+.muted{color:var(--s-text-muted)}
+.label{font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--s-text-muted)}
+.card{background:var(--s-surface);border:1px solid var(--s-border);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.04);padding:24px}
+
+/* ===== BOARD CHROME (doc wrapper) ===== */
+.doc-head{padding:48px 40px 8px}
+.doc-head h1{font-family:var(--display);font-weight:300;font-size:2.5rem;letter-spacing:-.02em}
+.doc-head p{color:var(--s-text-muted);max-width:74ch;margin-top:8px}
+.doc-head .bp{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.doc-head .bp span{font-family:var(--mono);font-size:11px;padding:4px 10px;border:1px solid var(--s-border);border-radius:6px;background:var(--s-surface)}
+
+/* ===== SCREEN SECTIONS ===== */
+.screen{margin:56px 0 0;padding:0 40px}
+.screen>.title{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;max-width:1400px}
+.screen>.title h2{font-family:var(--display);font-weight:300;font-size:1.5rem}
+.screen>.title .idx{font-family:var(--mono);font-size:11px;color:var(--s-accent)}
+.screen>.title p{color:var(--s-text-muted);font-size:13px;margin-left:auto;max-width:64ch;text-align:right}
+.board{display:flex;gap:40px;align-items:flex-start;overflow-x:auto;padding:8px 8px 40px}
+
+/* ===== DEVICE FRAMES ===== */
+.frame{flex:none}
+.frame .cap{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;padding-left:2px}
+.frame .cap b{font-weight:500;font-size:13px}
+.frame .cap span{font-family:var(--mono);font-size:11px;color:var(--s-text-muted)}
+.dev{overflow:hidden;background:var(--s-ground);display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.08),0 24px 60px -12px rgba(0,0,0,.15),0 0 0 1px rgba(0,0,0,.08)}
+.f-d{width:1100px}.f-d .dev{border-radius:14px;height:780px}
+.f-t{width:768px}.f-t .dev{border-radius:26px;border:6px solid var(--s-text);height:960px}
+.f-m{width:390px}.f-m .dev{border-radius:40px;border:6px solid var(--s-text);height:844px}
+.dev>.dsk,.dev>.tab,.dev>.mob{flex:1;min-height:0}
+.dsk .main,.tab .main,.mob .main{overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--s-border) transparent}
+
+/* ===== DESKTOP SHELL (sidebar + main) ===== */
+.dsk{display:grid;grid-template-columns:232px 1fr;grid-template-rows:minmax(0,1fr)}
+.side{background:var(--s-surface);border-right:1px solid var(--s-border);padding:20px 12px;display:flex;flex-direction:column;gap:2px}
+.side .brand{display:flex;align-items:center;gap:8px;padding:6px 10px 22px;font-family:var(--display);font-weight:400;font-size:19px}
+.side a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--s-text-muted);font-weight:500;font-size:13px}
+.side a.on{background:var(--s-ground);color:var(--s-text);box-shadow:inset 3px 0 0 var(--s-accent)}
+.side .sp{flex:1}
+.dsk .main{padding:24px 32px 40px;min-width:0}
+
+/* ===== TABLET SHELL (top nav + main) ===== */
+.tab{display:flex;flex-direction:column}
+.topnav{flex:none;display:flex;align-items:center;gap:4px;background:var(--s-surface);border-bottom:1px solid var(--s-border);padding:10px 24px}
+.topnav .brand{font-family:var(--display);font-weight:400;font-size:17px;display:flex;align-items:center;gap:7px;margin-right:14px;padding-right:14px;border-right:1px solid var(--s-border)}
+.topnav a{padding:6px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--s-text-muted)}
+.topnav a.on{color:var(--s-text);background:var(--s-ground);box-shadow:inset 0 -2px 0 var(--s-accent)}
+.tab .main{padding:24px;flex:1}
+
+/* ===== MOBILE SHELL (top bar + main + bottom tabs) ===== */
+.mob{display:flex;flex-direction:column}
+.mtop{flex:none;display:flex;align-items:center;gap:10px;background:var(--s-surface);border-bottom:1px solid var(--s-border);padding:14px 16px 10px}
+.mtop .brand{display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:400;font-size:16px}
+.mob .main{padding:16px 16px 24px;flex:1}
+.tabs{flex:none;display:flex;background:var(--s-surface);border-top:1px solid var(--s-border);padding:8px 8px 16px;justify-content:space-around}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--s-text-muted);padding:4px 10px}
+.tabs a.on{color:var(--s-text)}
+
+/* ===== PAGE CONTENT HELPERS ===== */
+.pg-head{margin-bottom:20px}
+.pg-head h1{font-family:var(--display);font-weight:300;font-size:2rem;letter-spacing:-.01em;line-height:1.1}
+.placeholder{padding:40px;text-align:center;color:var(--s-text-muted);font-style:italic;border:2px dashed var(--s-border);border-radius:var(--radius);margin:16px 0}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="doc-head">
+  <h1>[PRODUCT] Mockups</h1>
+  <p>App screens at three breakpoints. Replace placeholder content with your product's UI.</p>
+  <div class="bp"><span>desktop 1100px</span><span>tablet 768px</span><span>mobile 390px</span></div>
+</div>
+<button id="theme-toggle" onclick="toggleTheme()" style="position:fixed;top:12px;right:12px;z-index:999;background:var(--s-surface);border:1px solid var(--s-border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px;color:var(--s-text);" aria-label="Toggle theme">☉</button>
+
+<!-- ===== SCREEN TEMPLATES ===== -->
+<!-- Each <template> is stamped into 3 device frames (desktop/tablet/mobile) by JS below.
+     The template receives a class: .dsk, .tab, or .mob — use it to vary layout per breakpoint. -->
+
+<!-- SCREEN 1: Dashboard — Replace with your home/overview screen -->
+<template id="tmpl-screen1">
+  <!-- Desktop: sidebar is injected automatically. This is the .main content only. -->
+  <div class="pg-head"><h1>Dashboard</h1></div>
+  <div class="placeholder">Your dashboard content here — overview, key metrics, summary cards, insights.</div>
+</template>
+
+<!-- SCREEN 2: Detail — Replace with your single-item detail view -->
+<template id="tmpl-screen2">
+  <div class="pg-head"><h1>Item Detail</h1></div>
+  <div class="placeholder">Your detail view — charts, history, related items, drill-down content.</div>
+</template>
+
+<!-- SCREEN 3: Browse — Replace with your list/grid/category view -->
+<template id="tmpl-screen3">
+  <div class="pg-head"><h1>Browse</h1></div>
+  <div class="placeholder">Your browse/category view — search, filters, list items, category cards.</div>
+</template>
+
+<!-- SCREEN 4: Insights — Replace with your analytics/insights view -->
+<template id="tmpl-screen4">
+  <div class="pg-head"><h1>Insights</h1></div>
+  <div class="placeholder">Your insights/analytics view — trend analysis, correlations, recommendations.</div>
+</template>
+
+<!-- SCREEN 5: Quiet State — Replace with your empty/calm state -->
+<template id="tmpl-screen5">
+  <div class="pg-head"><h1>Quiet State</h1></div>
+  <div class="placeholder">Your quiet/empty state — what the app shows when there's nothing to report.</div>
+</template>
+
+<!-- ===== NAVIGATION TEMPLATES ===== -->
+
+<!-- Desktop sidebar — shown in the .dsk frame -->
+<template id="tmpl-sidebar">
+  <aside class="side">
+    <div class="brand">[PRODUCT]</div>
+    <a class="on">Dashboard</a>
+    <a>Detail</a>
+    <a>Browse</a>
+    <a>Insights</a>
+    <div class="sp"></div>
+  </aside>
+</template>
+
+<!-- Tablet top nav — shown in the .tab frame -->
+<template id="tmpl-topnav">
+  <nav class="topnav">
+    <span class="brand">[PRODUCT]</span>
+    <a class="on">Dashboard</a>
+    <a>Detail</a>
+    <a>Browse</a>
+    <a>Insights</a>
+  </nav>
+</template>
+
+<!-- Mobile bottom tabs — shown in the .mob frame -->
+<template id="tmpl-tabs">
+  <nav class="tabs">
+    <a class="on">Home</a>
+    <a>Detail</a>
+    <a>Browse</a>
+    <a>More</a>
+  </nav>
+</template>
+
+<!-- Mobile top bar — shown in the .mob frame -->
+<template id="tmpl-mtop">
+  <div class="mtop">
+    <span class="brand">[PRODUCT]</span>
+  </div>
+</template>
+
+<script>
+// ===== SCREEN DEFINITIONS — Add/remove/reorder as needed =====
+const SCREENS = [
+  { id: 'screen1', idx: '01', title: 'Dashboard',   hint: 'Overview with key metrics and summary' },
+  { id: 'screen2', idx: '02', title: 'Item Detail',  hint: 'Single item with history, charts, drill-down' },
+  { id: 'screen3', idx: '03', title: 'Browse',       hint: 'List or grid of items by category' },
+  { id: 'screen4', idx: '04', title: 'Insights',     hint: 'Analytics, trends, correlations' },
+  { id: 'screen5', idx: '05', title: 'Quiet State',  hint: 'Calm view when nothing needs attention' },
+];
+
+// ===== FRAME STAMPING (do not edit unless changing breakpoints) =====
+const BREAKPOINTS = [
+  { cls: 'f-d', label: 'Desktop', size: '1100 × 780', shell: 'dsk' },
+  { cls: 'f-t', label: 'Tablet',  size: '768 × 960',  shell: 'tab' },
+  { cls: 'f-m', label: 'Mobile',  size: '390 × 844',  shell: 'mob' },
+];
+
+function stamp(tmplId) {
+  const t = document.getElementById(tmplId);
+  return t ? t.content.cloneNode(true) : document.createDocumentFragment();
+}
+
+SCREENS.forEach(s => {
+  const section = document.createElement('div');
+  section.className = 'screen';
+  section.innerHTML = `<div class="title"><span class="idx">${s.idx}</span><h2>${s.title}</h2><p>${s.hint}</p></div>`;
+  const board = document.createElement('div');
+  board.className = 'board';
+
+  BREAKPOINTS.forEach(bp => {
+    const frame = document.createElement('div');
+    frame.className = `frame ${bp.cls}`;
+    frame.innerHTML = `<div class="cap"><b>${bp.label}</b><span>${bp.size}</span></div>`;
+    const dev = document.createElement('div');
+    dev.className = 'dev';
+    const shell = document.createElement('div');
+    shell.className = bp.shell;
+
+    if (bp.shell === 'dsk') {
+      shell.appendChild(stamp('tmpl-sidebar'));
+      const main = document.createElement('div');
+      main.className = 'main';
+      main.appendChild(stamp(`tmpl-${s.id}`));
+      shell.appendChild(main);
+    } else if (bp.shell === 'tab') {
+      shell.appendChild(stamp('tmpl-topnav'));
+      const main = document.createElement('div');
+      main.className = 'main';
+      main.appendChild(stamp(`tmpl-${s.id}`));
+      shell.appendChild(main);
+    } else {
+      shell.appendChild(stamp('tmpl-mtop'));
+      const main = document.createElement('div');
+      main.className = 'main';
+      main.appendChild(stamp(`tmpl-${s.id}`));
+      shell.appendChild(main);
+      shell.appendChild(stamp('tmpl-tabs'));
+    }
+
+    dev.appendChild(shell);
+    frame.appendChild(dev);
+    board.appendChild(frame);
+  });
+
+  section.appendChild(board);
+  document.body.appendChild(section);
+});
+
+function toggleTheme(){
+  var h=document.documentElement,c=h.getAttribute('data-theme');
+  var n=c==='dark'?'light':'dark';
+  h.setAttribute('data-theme',n);
+  localStorage.setItem('theme',n);
+}
+(function(){var s=localStorage.getItem('theme');if(s)document.documentElement.setAttribute('data-theme',s);})();
+</script>
+</body>
+</html>
