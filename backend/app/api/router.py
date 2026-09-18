@@ -2,7 +2,10 @@
 
 from fastapi import APIRouter
 
+from app.api import series
+
 api_router = APIRouter()
+api_router.include_router(series.router)
 
 
 @api_router.get("/health", tags=["health"])

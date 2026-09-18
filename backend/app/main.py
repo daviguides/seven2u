@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api.errors import register_exception_handlers
 from app.api.router import api_router
 from app.config import Settings, get_settings
 from app.infrastructure.database import (
@@ -35,6 +36,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.session_factory = create_session_factory(engine)
     logger.info("Database ready")
     yield
+    catalog = getattr(app.state, "catalog", None)
+    if catalog is not None:
+        await catalog.aclose()
     await engine.dispose()
 
 
@@ -69,6 +73,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     app = FastAPI(title="Seven2U", version="0.1.0", lifespan=lifespan)
     app.state.settings = settings
+    register_exception_handlers(app)
     app.include_router(api_router, prefix=API_PREFIX)
 
     static_dir = Path(settings.static_dir)
