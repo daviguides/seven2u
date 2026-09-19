@@ -118,10 +118,11 @@ ol.steps li b{color:var(--text)}
 .deck-dot.active{opacity:1;background:var(--gold);transform:scale(1.4)}
 .deck-hint{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);opacity:.6}
 @media(max-width:760px){.gates,.strip,.two,.demo,.layers{grid-template-columns:1fr}.layer.domain,.layer.root{grid-column:auto}svg.fig{max-height:none}}
+@page{size:landscape;margin:0}
 @media print{
   body{overflow:visible;background:#fff;color:#1b2438}
   .deck{height:auto;overflow:visible;scroll-snap-type:none}
-  .slide{height:100vh;page-break-after:always;break-after:page;opacity:1!important;transform:none!important;background:#fff!important;color:#1b2438}
+  .slide{width:100vw;height:100vh;page-break-after:always;break-after:page;opacity:1!important;transform:none!important;background:#fff!important;color:#1b2438;padding:clamp(32px,4vh,56px) clamp(40px,6vw,80px)}
   .slide:last-child{page-break-after:avoid}
   .slide .reveal{opacity:1!important;transform:none!important}
   .deck-progress,.deck-dots,.deck-hint{display:none!important}
