@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 
 from app.domain.errors import NotFoundError
 from app.domain.interfaces import (
@@ -13,6 +14,10 @@ from app.domain.interfaces import (
 from app.domain.models import InsightContext, SeriesInsight
 
 logger = logging.getLogger(__name__)
+
+CACHE_TTL_SECONDS = 86400  # 24 hours
+
+_insight_cache: dict[str, tuple[float, SeriesInsight]] = {}
 
 
 class InsightService:
@@ -33,6 +38,7 @@ class InsightService:
         self._comments = comment_repo
         self._primary = primary
         self._fallback = fallback
+        self._cache = _insight_cache
 
     async def _build_context(
         self,
@@ -64,6 +70,23 @@ class InsightService:
             comments=tuple(c.content for c in comments),
         )
 
+    def _cache_key(
+        self,
+        series_id: int,
+        episode_id: int | None,
+    ) -> str:
+        return f"{series_id}:{episode_id or 'series'}"
+
+    def _get_cached(self, key: str) -> SeriesInsight | None:
+        entry = self._cache.get(key)
+        if entry is None:
+            return None
+        ts, insight = entry
+        if time.monotonic() - ts > CACHE_TTL_SECONDS:
+            del self._cache[key]
+            return None
+        return insight
+
     async def _generate(self, context: InsightContext) -> SeriesInsight:
         if self._primary is None:
             return await self._fallback.generate_insight(context)
@@ -74,12 +97,18 @@ class InsightService:
             return await self._fallback.generate_insight(context)
 
     async def for_series(self, series_id: int) -> SeriesInsight:
-        """Generate an insight for a whole series."""
+        """Generate an insight for a whole series (cached 24h)."""
+        key = self._cache_key(series_id, None)
+        cached = self._get_cached(key)
+        if cached is not None:
+            return cached
         context = await self._build_context(
             series_id=series_id,
             episode_id=None,
         )
-        return await self._generate(context)
+        result = await self._generate(context)
+        self._cache[key] = (time.monotonic(), result)
+        return result
 
     async def for_episode(
         self,
@@ -87,9 +116,15 @@ class InsightService:
         series_id: int,
         episode_id: int,
     ) -> SeriesInsight:
-        """Generate an insight for one episode."""
+        """Generate an insight for one episode (cached 24h)."""
+        key = self._cache_key(series_id, episode_id)
+        cached = self._get_cached(key)
+        if cached is not None:
+            return cached
         context = await self._build_context(
             series_id=series_id,
             episode_id=episode_id,
         )
-        return await self._generate(context)
+        result = await self._generate(context)
+        self._cache[key] = (time.monotonic(), result)
+        return result
