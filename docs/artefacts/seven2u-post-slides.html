@@ -122,7 +122,19 @@ ol.steps li b{color:var(--text)}
 @media print{
   body{overflow:visible;background:#fff;color:#1b2438}
   .deck{height:auto;overflow:visible;scroll-snap-type:none}
-  .slide{width:100vw;height:100vh;page-break-after:always;break-after:page;opacity:1!important;transform:none!important;background:#fff!important;color:#1b2438;padding:clamp(32px,4vh,56px) clamp(40px,6vw,80px)}
+  .slide{width:100vw;height:100vh;page-break-after:always;break-after:page;opacity:1!important;transform:none!important;background:#fff!important;color:#1b2438;padding:24px 48px;justify-content:flex-start;padding-top:36px}
+  .slide__heading{font-size:clamp(20px,3.5vw,32px)!important}
+  .slide__subtitle{font-size:clamp(13px,1.8vw,18px)!important}
+  .gate .v{font-size:clamp(16px,2vw,24px)!important}
+  .gate .note{font-size:clamp(11px,1.3vw,14px)!important}
+  .gate{padding:12px 16px!important}
+  .scard{padding:10px 14px!important}
+  .scard b{font-size:14px!important}
+  .scard p{font-size:12px!important}
+  svg.fig{max-height:240px!important}
+  table{font-size:11px!important}
+  th,td{padding:6px 10px!important}
+  pre{font-size:11px!important;padding:10px 14px!important}
   .slide:last-child{page-break-after:avoid}
   .slide .reveal{opacity:1!important;transform:none!important}
   .deck-progress,.deck-dots,.deck-hint{display:none!important}
