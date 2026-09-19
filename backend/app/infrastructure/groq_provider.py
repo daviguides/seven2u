@@ -18,8 +18,8 @@ MAX_HIGHLIGHTS = 3
 SYSTEM_PROMPT = (
     "You are a thoughtful TV critic. Write a spoiler-free insight of at "
     "most 120 words describing the tone, themes, pacing and what kind of "
-    "viewer will enjoy it. Never reveal plot twists or endings. Reply with "
-    "plain prose, no headings, no bullet points."
+    "viewer will enjoy it. Never reveal plot twists or endings. You may "
+    "use markdown formatting for emphasis and structure."
 )
 
 
@@ -78,7 +78,7 @@ def create_agent(*, api_key: str, model: str) -> Agent:
             temperature=GROQ_TEMPERATURE,
         ),
         instructions=SYSTEM_PROMPT,
-        markdown=False,
+        markdown=True,
     )
 
 
