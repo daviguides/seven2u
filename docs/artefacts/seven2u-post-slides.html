@@ -118,6 +118,18 @@ ol.steps li b{color:var(--text)}
 .deck-dot.active{opacity:1;background:var(--gold);transform:scale(1.4)}
 .deck-hint{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);opacity:.6}
 @media(max-width:760px){.gates,.strip,.two,.demo,.layers{grid-template-columns:1fr}.layer.domain,.layer.root{grid-column:auto}svg.fig{max-height:none}}
+@media print{
+  body{overflow:visible;background:#fff;color:#1b2438}
+  .deck{height:auto;overflow:visible;scroll-snap-type:none}
+  .slide{height:100vh;page-break-after:always;break-after:page;opacity:1!important;transform:none!important;background:#fff!important;color:#1b2438}
+  .slide:last-child{page-break-after:avoid}
+  .slide .reveal{opacity:1!important;transform:none!important}
+  .deck-progress,.deck-dots,.deck-hint{display:none!important}
+  .slide:nth-child(odd),.slide:nth-child(even){background-image:none!important}
+  :root{--bg:#fff;--surface:#f8f8f8;--surface2:#f0f0f0;--border:rgba(0,0,0,.12);--text:#1b2438;--dim:#5d6b85;--gold:#a97e14;--gold-dim:rgba(169,126,20,.08);--green:#0e7a4e;--green-dim:rgba(14,122,78,.08);--amber:#9a5b04;--violet:#6d28d9;--fig-ink:#1b2438;--fig-muted:rgba(0,0,0,.25)}
+  table,code,.gate,.scard{border-color:rgba(0,0,0,.15)!important}
+  svg text{fill:#1b2438!important}
+}
 </style>
 </head>
 <body>
