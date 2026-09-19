@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import Markdown from "react-markdown";
 
 import { api } from "../api/client";
 import type { Insight } from "../api/types";
@@ -109,9 +110,9 @@ export function InsightCard({
       )}
       {state.status === "ready" && (
         <>
-          <p className="text-sm leading-relaxed text-text-primary">
-            {state.insight.text}
-          </p>
+          <div className="prose prose-sm prose-invert max-w-none text-text-primary [&_strong]:text-accent [&_em]:text-text-secondary [&_p]:my-1.5 [&_p:first-child]:mt-0">
+            <Markdown>{state.insight.text}</Markdown>
+          </div>
           {state.insight.highlights.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {state.insight.highlights.map((h) => (

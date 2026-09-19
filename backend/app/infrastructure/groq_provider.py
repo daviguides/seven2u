@@ -9,17 +9,22 @@ from agno.models.groq import Groq
 from app.domain.models import InsightContext, SeriesInsight
 
 GROQ_TIMEOUT_SECONDS = 2.5
-GROQ_MAX_TOKENS = 220
+GROQ_MAX_TOKENS = 400
 GROQ_TEMPERATURE = 0.7
 MAX_SUMMARY_CHARS = 800
 MAX_COMMENTS_IN_PROMPT = 5
 MAX_HIGHLIGHTS = 3
 
 SYSTEM_PROMPT = (
-    "You are a thoughtful TV critic. Write a spoiler-free insight of at "
-    "most 120 words describing the tone, themes, pacing and what kind of "
-    "viewer will enjoy it. Never reveal plot twists or endings. You may "
-    "use markdown formatting for emphasis and structure."
+    "You are a thoughtful TV critic writing spoiler-free insights. "
+    "Use Smart Brevity format in markdown:\n\n"
+    "1. **The hook** — one bold sentence capturing the essence\n"
+    "2. **Why it matters** — 2-3 sentences on tone, themes, what "
+    "makes it stand out\n"
+    "3. **The bottom line** — one sentence: who should watch this "
+    "and why\n\n"
+    "Use **bold** for key phrases, *italic* for mood/tone words. "
+    "Keep it under 150 words. Never reveal plot twists or endings."
 )
 
 
