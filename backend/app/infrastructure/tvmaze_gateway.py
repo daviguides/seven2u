@@ -12,7 +12,8 @@ from app.domain.models import Episode, Series
 
 TVMAZE_BASE_URL = "https://api.tvmaze.com"
 TVMAZE_TIMEOUT_SECONDS = 5.0
-CACHE_TTL_SECONDS = 300.0
+SEARCH_CACHE_TTL = 300.0  # 5 min — search results may change
+DETAIL_CACHE_TTL = 21600.0  # 6 hours — show/episode metadata is stable
 HTTP_NOT_FOUND = 404
 
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -66,7 +67,7 @@ def map_episode(payload: dict[str, Any], series_id: int) -> Episode:
 class TTLCache:
     """Minimal in-memory cache with per-entry expiry."""
 
-    def __init__(self, ttl_seconds: float = CACHE_TTL_SECONDS) -> None:
+    def __init__(self, ttl_seconds: float = DETAIL_CACHE_TTL) -> None:
         """Create a cache whose entries live for ``ttl_seconds``."""
         self._ttl = ttl_seconds
         self._entries: dict[str, tuple[float, Any]] = {}
@@ -94,22 +95,33 @@ class TVMazeGateway:
         self,
         client: httpx.AsyncClient | None = None,
         base_url: str = TVMAZE_BASE_URL,
-        cache: TTLCache | None = None,
+        search_cache: TTLCache | None = None,
+        detail_cache: TTLCache | None = None,
     ) -> None:
         """Create the gateway, optionally injecting a client for tests."""
         self._client = client or httpx.AsyncClient(
             base_url=base_url,
             timeout=TVMAZE_TIMEOUT_SECONDS,
         )
-        self._cache = cache or TTLCache()
+        self._search_cache = search_cache or TTLCache(
+            ttl_seconds=SEARCH_CACHE_TTL,
+        )
+        self._detail_cache = detail_cache or TTLCache(
+            ttl_seconds=DETAIL_CACHE_TTL,
+        )
 
     async def aclose(self) -> None:
         """Release the underlying HTTP client."""
         await self._client.aclose()
 
-    async def _get_json(self, path: str, params: dict[str, str]) -> Any:
+    async def _get_json(
+        self,
+        path: str,
+        params: dict[str, str],
+        cache: TTLCache,
+    ) -> Any:
         key = f"{path}?{sorted(params.items())}"
-        cached = self._cache.get(key)
+        cached = cache.get(key)
         if cached is not None:
             return cached
         try:
@@ -123,26 +135,38 @@ class TVMazeGateway:
                 f"TVMaze responded with {response.status_code}",
             )
         data = response.json()
-        self._cache.set(key, data)
+        cache.set(key, data)
         return data
 
     async def search(self, query: str) -> list[Series]:
-        """Search shows by name."""
-        data = await self._get_json("/search/shows", {"q": query})
+        """Search shows by name (cached 5 min)."""
+        data = await self._get_json(
+            "/search/shows",
+            {"q": query},
+            cache=self._search_cache,
+        )
         return [map_series(item["show"]) for item in data]
 
     async def get_series(self, series_id: int) -> Series:
-        """Fetch a single show by id."""
+        """Fetch a single show by id (cached 6h)."""
         try:
-            data = await self._get_json(f"/shows/{series_id}", {})
+            data = await self._get_json(
+                f"/shows/{series_id}",
+                {},
+                cache=self._detail_cache,
+            )
         except NotFoundError as e:
             raise NotFoundError(f"Series {series_id} not found") from e
         return map_series(data)
 
     async def get_episodes(self, series_id: int) -> list[Episode]:
-        """Fetch all episodes of a show."""
+        """Fetch all episodes of a show (cached 6h)."""
         try:
-            data = await self._get_json(f"/shows/{series_id}/episodes", {})
+            data = await self._get_json(
+                f"/shows/{series_id}/episodes",
+                {},
+                cache=self._detail_cache,
+            )
         except NotFoundError as e:
             raise NotFoundError(f"Series {series_id} not found") from e
         return [map_episode(item, series_id) for item in data]

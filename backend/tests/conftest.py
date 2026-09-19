@@ -2,6 +2,8 @@
 
 import pytest
 
+from app.services import insight_service
+
 from tests.fakes import (
     FakeCatalog,
     FakeCommentRepository,
@@ -9,6 +11,12 @@ from tests.fakes import (
     make_episode,
     make_series,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clear_insight_cache():
+    """Reset module-level insight cache between tests."""
+    insight_service._insight_cache.clear()
 
 
 @pytest.fixture
