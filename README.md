@@ -14,6 +14,21 @@ Open <http://localhost:7777>. That is the only exposed port: FastAPI serves both
 
 Optional: set `GROQ_API_KEY` (copy `.env.example` to `.env`) to enable LLM-generated insights via Agno + Groq. Without it, or whenever the model is slow or fails, the app falls back to a rule-based insight and labels it as such in the UI. Nothing breaks either way.
 
+## Screenshots
+
+### Search
+![Home](docs/screenshots/01-home.png)
+![Search Results](docs/screenshots/02-search-results.png)
+
+### Series Detail
+![Series Detail](docs/screenshots/03-series-detail.png)
+
+### AI Insight (Smart Brevity)
+![AI Insight](docs/screenshots/04-ai-insight.png)
+
+### Light Mode
+![Light Mode](docs/screenshots/05-light-mode.png)
+
 ## What you can do
 
 | Feature | Where |
