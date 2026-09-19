@@ -8,7 +8,7 @@ DEFAULT_PORT = 7777
 DEFAULT_DATABASE_URL = (
     "postgresql+asyncpg://seven2u:seven2u@localhost:5432/seven2u"
 )
-DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b"
 
 
 class Settings(BaseSettings):
